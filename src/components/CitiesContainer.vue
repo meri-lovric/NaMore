@@ -1,7 +1,7 @@
 <template>
   <div class="tile is-ancestor">
     <div class="tile is-parent is-12 scrolling-wrapper">
-      <div v-for="beach in beachesState" :key="beach.id" class="card">
+      <div v-for="(beach, index) in beaches" :key="index" class="card">
         <div class="card-image">
           <figure class="image is-4by3">
             <img :src="beach.url" alt="Placeholder image" />
@@ -11,7 +11,7 @@
           <div class="media">
             <div class="media-left">
               <span class="icon is-small">
-                <font-awesome-icon icon="heart" />
+                <font-awesome-icon icon="heart" @click="upvote(beach.id)" />
                 <strong class="has-text-info">{{ beach.votes }}</strong>
               </span>
             </div>
@@ -36,14 +36,20 @@
 </template>
 
 <script>
-import { beaches } from "../seed.js";
+import { beaches } from "../seed"
 
 export default {
   data() {
     return {
-      beachesState: beaches,
+      beaches,
     };
   },
+  methods: {
+    upvote (beachId) {
+    let clickedBeach = this.beaches.find((beach) => beach.id == beachId);
+    clickedBeach.votes++;
+  }
+  }
 };
 </script>
 <style scoped>

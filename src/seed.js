@@ -1,6 +1,6 @@
 export const beaches = [
   {
-    id: 1,
+    id: '1',
     name: "Buža",
     url: "https://oddviser.com/photo/idea/1600/652.jpg",
     description:
@@ -8,7 +8,7 @@ export const beaches = [
     votes: 10,
   },
   {
-    id: 2,
+    id: '2',
     name: "Banje",
     url:
       "https://images.unsplash.com/photo-1515515677552-07f02e46a8f6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80",
@@ -17,7 +17,7 @@ export const beaches = [
     votes: 20,
   },
   {
-    id: 3,
+    id: '3',
     name: "Veliki Žal",
     url:
       "https://commons.wikimedia.org/wiki/File:Veliki_%C5%BEali_beach.JPG#/media/Datoteka:Veliki_žali_beach.JPG",
@@ -26,7 +26,7 @@ export const beaches = [
     votes: 20,
   },
   {
-    id: 4,
+    id: '4',
     name: "Nugal",
     url:
       "https://images.unsplash.com/photo-1570135430923-39edc22a2ffa?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=967&q=80",
@@ -35,7 +35,7 @@ export const beaches = [
     votes: 20,
   },
   {
-    id: 5,
+    id: '5',
     name: "Punta Rata",
     url:
       "https://www.hotelmarinaadria.com/EasyEdit/UserFiles/PageImages/1-punta-rata/1-punta-rata-635773943851769062_880_495.jpeg",
@@ -44,7 +44,7 @@ export const beaches = [
     votes: 20,
   },
   {
-    id: 6,
+    id: '6',
     name: "Zlatni rat",
     url:
       "https://images.unsplash.com/photo-1537353825146-9f2f61475590?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=701&q=80",
@@ -53,7 +53,7 @@ export const beaches = [
     votes: 20,
   },
   {
-    id: 7,
+    id: '7',
     name: "Raduča",
     url:
       "https://croatia.hr/sites/default/files/styles/image_full_width/public/beaches/PRIMOSTEN-Raduca-DJI_0300_ACR-aleksandar-gospic.jpg?itok=Rsc57zVZ",
