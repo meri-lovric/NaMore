@@ -6,7 +6,7 @@
          {{pageName}}
       </h1>
       <h2 class="subtitle">
-        Primary subtitle
+        {{pageSubtitle}}
       </h2>
     </div>
   </div>
@@ -16,7 +16,8 @@
 export default {
   name: 'HeroTitle',
   props: {
-    pageName: String
+    pageName: String,
+    pageSubtitle: String
   }
 }
 </script>

@@ -10,7 +10,7 @@
         <div class="card-content">
           <div class="media">
             <div class="media-left">
-              <span class="icon is-small">
+              <span class="icon is-small" v-bind:class="{ liked: beach.isClicked }">
                 <font-awesome-icon icon="heart" @click="upvote(beach.id)" />
                 <strong class="has-text-info">{{ beach.votes }}</strong>
               </span>
@@ -36,20 +36,22 @@
 </template>
 
 <script>
-import { beaches } from "../seed"
-
+import { beaches } from "../seed";
 export default {
-  data() {
-    return {
+  name: "CitiesContainer",
+  data () {
+    return{
       beaches,
-    };
+    }
   },
-  methods: {
-    upvote (beachId) {
-    let clickedBeach = this.beaches.find((beach) => beach.id == beachId);
-    clickedBeach.votes++;
-  }
-  }
+  methods:
+  {
+    upvote(beachId) {
+      let clickedBeach = this.beaches.find((beach) => beach.id == beachId);
+      clickedBeach.votes++;
+      clickedBeach.isClicked =  true;
+    }
+  }, 
 };
 </script>
 <style scoped>
@@ -72,5 +74,18 @@ export default {
 }
 .tile.is-ancestor:last-child {
   margin-right: 5%;
+}
+.icon {
+  cursor: pointer;
+  color:#c9c9c9;
+}
+.icon:hover {
+  color: red;
+}
+.icon.liked{
+  color:red;
+}
+.has-text-info{
+  color: #00d1b2 !important;
 }
 </style>

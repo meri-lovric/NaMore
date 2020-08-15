@@ -6,6 +6,7 @@ export const beaches = [
     description:
       "Jedna od najatraktivnijih dubrovačkih plaža je Buža. Ime je dobila po dalmatinskom izrazu za rupu odnosno otvor, jer se na nju stiže kroz otvor u južnim dubrovačkim zidinama. Radi se o stjenovitoj obali s betonskim terasama s pogledom na otvoreno more i otočić Lokrum.",
     votes: 10,
+    isCliked: false
   },
   {
     id: '2',
@@ -15,15 +16,17 @@ export const beaches = [
     description:
       "Radi se o najpoznatijem „licu s plakata“ Dubrovnika s finim šljunkom istočno od same stare jezgre. Ovo je jedna od najomiljenijih plaža tijekom svih godišnjih doba i rijetko ćete imati priliku biti sami na njoj, jer se tolika ljepota jednostavno ne može ignorirati.",
     votes: 20,
+    isCliked: false
   },
   {
     id: '3',
     name: "Veliki Žal",
     url:
-      "https://commons.wikimedia.org/wiki/File:Veliki_%C5%BEali_beach.JPG#/media/Datoteka:Veliki_žali_beach.JPG",
+      "https://upload.wikimedia.org/wikipedia/commons/4/42/Veliki_%C5%BEali_beach.JPG",
     description:
       "U blizini sela Brsečine tridesetak kilometara zapadno od Dubrovnika smjestila se lijepa šljunčana plaža Veliki Žal. Nalazi se u zelenom okruženju česmine i ostalog mediteranskog raslinja. Leži nekoliko metara udaljena od Jadranske magistrale, a na raspolaganju vam je parkiralište. ",
     votes: 20,
+    isCliked: false
   },
   {
     id: '4',
@@ -33,6 +36,7 @@ export const beaches = [
     description:
       "S južne strane Makarske i šumovitog poluotoka Osejava leži jedna od najljepših šljunčanih plaža, a možda i najljepša makarska plaža – Nugal. Šetnja do nje pješačkim šumskim putem uz more traje pola sata tako bismo vam preporučili dolazak brodicom ako nemate najbolju kondiciju.",
     votes: 20,
+    isCliked: false
   },
   {
     id: '5',
@@ -42,6 +46,7 @@ export const beaches = [
     description:
       "Iako je njeno ime Dugi rat, poznatija je pod imenom Punta rata – jedna od najljepših plaža Hrvatske ne samo Dalmacije nalazi se u Brelima. Forbes ju je jednom proglasio šestom najljepšom plažom svijeta, a najljepšom u Europi. ",
     votes: 20,
+    isCliked: false
   },
   {
     id: '6',
@@ -51,6 +56,7 @@ export const beaches = [
     description:
       "Ova je plaža zaštitni znak hrvatskog turizma. Radi se ne samo o prekrasnoj plaži koja je turistički fenomen, ona je i geološki fenomen. Prošećite od središta mjesta Bol, sjedite na turistički vlakić ili brodicu i dođite na Zlatni rat.",
     votes: 20,
+    isCliked: false
   },
   {
     id: '7',
@@ -60,5 +66,6 @@ export const beaches = [
     description:
       "Primošten nije samo lijepo mjesto za odmor, on je mjesto s jednom od najvećih šljunčanih plaža u Dalmaciji koja je lijepa koliko i velika. Velika Raduča uređena je još šezdesetih godina i nakon nekoliko desetaka godina spojena je s Malom Radučom koja se nalazi neposredno uz središte.",
     votes: 20,
+    isCliked: false
   },
 ];
