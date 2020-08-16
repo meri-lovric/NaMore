@@ -19,9 +19,9 @@
         Home
       </a>
 
-      <a class="navbar-item">
+      <router-link to="/profile" class="navbar-item">
         Profile
-      </a>
+      </router-link>
 
       <div class="navbar-item has-dropdown is-hoverable">
         <a class="navbar-link">
@@ -61,6 +61,7 @@
       </div>
     </div>
   </div>
+  
 </nav>
 </template>
 <script>
