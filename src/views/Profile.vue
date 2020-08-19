@@ -49,7 +49,6 @@
               <li
                 v-for="(option, index) in options"
                 :key="`option-${index}`"
-                class="is-active"
                 @click="changeTab(option.id)"
               >
                 <a>{{option.title}}{{index}}</a>
@@ -61,12 +60,13 @@
     </section>
     <div class :class="{hidden: !options.find(option => option.id === 1).isActive}">
       <ProfileInfo />
+      <Posts />
     </div>
     <div  :class="{hidden: !options.find(option => option.id === 2).isActive}">
       <FriendsList />
     </div>
     <div  :class="{hidden: !options.find(option => option.id === 3).isActive}">
-        Collection
+        <Gallery />
     </div>
   </div>
 </template>
@@ -74,10 +74,14 @@
 <script>
 import ProfileInfo from "../components/ProfileInfo";
 import FriendsList from "../components/FriendsList";
+import Posts from "../components/Posts.vue";
+import Gallery from "../components/Gallery";
 export default {
   components: {
     ProfileInfo,
-    FriendsList
+    FriendsList,
+    Posts,
+    Gallery
   },
   data() {
     return {

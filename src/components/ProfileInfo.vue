@@ -31,3 +31,8 @@ export default {
     
 }
 </script>
+<style scoped>
+.level{
+  margin-top:.75rem;
+}
+</style>
