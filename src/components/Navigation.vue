@@ -23,6 +23,11 @@
         Profile
       </router-link>
 
+      <router-link to="/beaches" class="navbar-item">
+        Plaže
+      </router-link>
+
+
       <div class="navbar-item has-dropdown is-hoverable">
         <a class="navbar-link">
           More

@@ -2,16 +2,17 @@
   <article class="media">
     <figure class="media-left">
       <p class="image is-64x64">
-        <img src="../assets/Screenshot_20200809-211649 (2).jpg" />
+        <img class="image " :src="post.userPost.profilePhoto" />
       </p>
     </figure>
     <div class="media-content">
       <div class="content">
         <p>
-          <strong>John Smith</strong>
-          <small>@johnsmith</small>
+          <strong>{{post.userPost.name}}</strong>
+          <small>@{{post.userPost.username}}</small>
           <small>31m</small>
-          <br />Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ornare magna eros, eu pellentesque tortor vestibulum ut. Maecenas non massa sem. Etiam finibus odio quis feugiat facilisis.
+          <br />
+          {{post.userPost.postBody}}
         </p>
       </div>
       <nav class="level is-mobile">
@@ -21,12 +22,12 @@
               <font-awesome-icon icon="reply" />
             </span>
           </a>
-          <a class="level-item">
+          <a class="level-item" id="retweet2">
             <span class="icon is-small">
               <font-awesome-icon icon="retweet" />
             </span>
           </a>
-          <a class="level-item">
+          <a class="level-item" id="retweet3">
             <span class="icon is-small">
               <font-awesome-icon icon="heart" />
             </span>
@@ -35,13 +36,30 @@
       </nav>
     </div>
     <div class="media-right">
-      <button class="delete"></button>
+      <button @click="deleteStatus()" class="delete"></button>
     </div>
   </article>
 </template>
 
 <script>
-export default {};
+import {posts} from "../posts.js"
+export default {
+  data(){
+    return{ posts}
+  },
+  props: {
+    post: Object,
+  },
+  methods:{
+    deleteStatus(){
+      this.posts.pop(this.post.userPost)
+    }
+  }
+};
 </script>
 <style scoped>
+.media {
+  margin-bottom: 2.5rem;
+}
+
 </style>

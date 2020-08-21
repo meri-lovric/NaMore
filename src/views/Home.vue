@@ -1,31 +1,30 @@
 <template>
 <div>
-   <Navigation :isActiveLogo="true"  />
-      <section class="section">
-        <div class="container">
-          <HeroTitle pageName="NaMore" pageSubtitle="Di se kupaš?" />
+  <Navigation :isActiveLogo="true" />
+  <section class="section">
+    <div class="container">
+      <HeroTitle pageName="NaMore" pageSubtitle="Di se kupaš?" />
+    </div>
+  </section>
+  <router-view />
+  <CitiesContainer />
+  <body>
+    <section class="section">
+      <div class="container">
+        <h1 class="title">Feed</h1>
+        <h2 class="subtitle">
+          A simple container to divide your page into
+          <strong>sections</strong>, like the one you're currently reading
+        </h2>
+        <div class="container" v-for="(post,index) in posts" :key="index" >
+          <SinglePost
+            :post="{post}"
+          />
         </div>
-      </section>
-      <router-view/>
-      <CitiesContainer />
-      <body>
-        <section class="section">
-          <div class="container">
-            <h1 class="title">Feed</h1>
-            <h2 class="subtitle">
-              A simple container to divide your page into
-              <strong>sections</strong>, like the one you're currently reading
-            </h2>
-            
-            <SinglePost />
-            <SinglePost />
-          <SinglePost />
-          
-
-          </div>
-        </section>
-        </body>
-  </div>
+      </div>
+    </section>
+  </body>
+</div>
 </template>
 
 <script>
@@ -34,14 +33,19 @@ import HeroTitle from "../components/HeroTitle";
 import CitiesContainer from "../components/CitiesContainer.vue";
 import SinglePost from "../components/SinglePost.vue";
 import Navigation from "../components/Navigation.vue";
-
+import {posts} from "../posts.js";
 export default {
   name: "App",
   components: {
     HeroTitle,
     CitiesContainer,
     SinglePost,
-    Navigation
+    Navigation,
+  },
+  data() {
+    return {
+      posts
+    };
   },
 };
 </script>
