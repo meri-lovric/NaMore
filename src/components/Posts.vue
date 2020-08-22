@@ -7,7 +7,7 @@
           <p class="control">
             <input
               class="input"
-              @keyup.enter="searchPosts()"
+              @keyup="searchPosts()"
               ref="postText"
               type="text"
               placeholder="Pretraži objave"

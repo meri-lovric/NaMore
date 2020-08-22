@@ -8,7 +8,7 @@
             <input
               class="input"
               ref="friendsText"
-              @keyup.enter="searchPosts()"
+              @keyup="searchPosts()"
               type="text"
               placeholder="Find a friend"
             />
