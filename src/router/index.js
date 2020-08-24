@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Profile from '../views/Profile.vue'
 import Beach from '../views/Beach.vue'
+import NewBeachForm from "../views/NewBeachForm.vue"
 Vue.use(VueRouter)
 
   const routes = [
@@ -28,6 +29,11 @@ Vue.use(VueRouter)
     path: '/beaches',
     name: 'Beaches',
     component: Beach
+  },
+  {
+    path:'/newbeachform',
+    name: 'NewBeach',
+    component: NewBeachForm
   }
 ]
 

@@ -5,31 +5,8 @@
       <div class="hero-head">
         <nav class="navbar">
           <div class="container">
-            <div class="navbar-brand">
-              <a class="navbar-item">
-                <img src="https://bulma.io/images/bulma-type-white.png" alt="Logo" />
-              </a>
-              <span class="navbar-burger burger" data-target="navbarMenuHeroA">
-                <span></span>
-                <span></span>
-                <span></span>
-              </span>
-            </div>
             <div id="navbarMenuHeroA" class="navbar-menu">
-              <div class="navbar-end">
-                <a class="navbar-item is-active">
-                  <router-link to="/">Home</router-link>
-                </a>
-                <a class="navbar-item">Gallery</a>
-                <span class="navbar-item">
-                  <a class="button is-primary is-inverted">
-                    <span class="icon">
-                      <i class="fab fa-github"></i>
-                    </span>
-                    <span>Sign out</span>
-                  </a>
-                </span>
-              </div>
+              <Navigation />
             </div>
           </div>
         </nav>
@@ -42,7 +19,7 @@
             Greška! Ne možete poslati prazan status.
           </div>
         </div>
-        <button class="modal-close is-large"  aria-label="close"></button>
+        <button class="modal-close is-large" aria-label="close"></button>
       </div>
       <!-- Hero content: will be in the middle -->
       <div class="hero-body">
@@ -103,12 +80,15 @@ import FriendsList from "../components/FriendsList";
 import Posts from "../components/Posts.vue";
 import Gallery from "../components/Gallery";
 import { posts } from "../posts.js";
+import { user } from "../user.js";
+import Navigation from "../components/Navigation";
 export default {
   components: {
     ProfileInfo,
     FriendsList,
     Posts,
     Gallery,
+    Navigation,
   },
   data() {
     return {
@@ -129,13 +109,7 @@ export default {
           isActive: false,
         },
       ],
-      user: {
-        id: 1,
-        name: "Meri",
-        username: "merixo",
-        photo:
-          "https://images.unsplash.com/photo-1537815749002-de6a533c64db?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1090&q=80",
-      },
+      user,
       posts,
       isModalActive: false,
     };
@@ -151,22 +125,23 @@ export default {
     },
     submitStatus() {
       let newPost = {
-        id: 1,
+        id: this.user.id,
         postBody: this.$refs.statusText.value,
         username: this.user.username,
         name: this.user.name,
-        profilePhoto: this.user.photo,
+        photo: this.user.photo,
         isHidden: false,
       };
       if (this.$refs.statusText.value) {
         posts.push(newPost);
+        this.$refs.statusText.value = "";
       } else {
         this.isModalActive = true;
       }
     },
     exitModal() {
       this.isModalActive = false;
-    }
+    },
   },
 };
 </script>

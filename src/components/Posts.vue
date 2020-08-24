@@ -19,7 +19,7 @@
         </div>
       </h2>
       <div v-for="(userPost, index) in userPosts" :key="index">
-        <SinglePost :post="{userPost}" :class="{ hidden: userPost.isHidden }" />
+        <SinglePost :post="userPost" :class="{ hidden: userPost.isHidden }" />
       </div>
       <strong><p >{{searchResult}}</p></strong>
     </div>

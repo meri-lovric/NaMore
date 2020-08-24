@@ -1,7 +1,12 @@
 <template>
   <div class="tile is-ancestor">
     <div class="tile is-parent is-12 scrolling-wrapper">
-      <div v-for="(beach, index) in beaches" :key="index" class="card">
+      <div
+        v-for="(beach, index) in beaches"
+        :key="index"
+        class="card"
+        @click="showCardInGallery(index)"
+      >
         <div class="card-image">
           <figure class="image is-4by3">
             <img :src="beach.url" alt="Placeholder image" />
@@ -37,21 +42,27 @@
 
 <script>
 import { beaches } from "../seed";
+import {bus} from "../main";
 export default {
   name: "CitiesContainer",
-  data () {
-    return{
+  data() {
+    return {
       beaches,
-    }
+      
+    };
   },
-  methods:
-  {
+  methods: {
     upvote(beachId) {
       let clickedBeach = this.beaches.find((beach) => beach.id == beachId);
       clickedBeach.votes++;
-      clickedBeach.isClicked =  true;
-    }
-  }, 
+      clickedBeach.isClicked = true;
+    },
+    showCardInGallery(index) {
+     bus.$emit('showCardInGallery', index);
+             this.$router.push({ name: "Beaches" });
+
+    },
+  },
 };
 </script>
 <style scoped>
@@ -77,15 +88,15 @@ export default {
 }
 .icon {
   cursor: pointer;
-  color:#c9c9c9;
+  color: #c9c9c9;
 }
 .icon:hover {
   color: red;
 }
-.icon.liked{
-  color:red;
+.icon.liked {
+  color: red;
 }
-.has-text-info{
+.has-text-info {
   color: #00d1b2 !important;
 }
 </style>

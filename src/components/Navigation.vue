@@ -20,7 +20,8 @@
 
     <div id="navbarBasicExample" class="navbar-menu">
       <div class="navbar-start">
-        <a class="navbar-item">Home</a>
+        <a class="navbar-item">        <router-link to="/" class="navbar-item">Home</router-link>
+</a>
 
         <router-link to="/profile" class="navbar-item">Profile</router-link>
 

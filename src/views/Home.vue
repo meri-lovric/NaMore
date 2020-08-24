@@ -18,7 +18,7 @@
         </h2>
         <div class="container" v-for="(post,index) in posts" :key="index" >
           <SinglePost
-            :post="{post}"
+            :post="post"
           />
         </div>
       </div>

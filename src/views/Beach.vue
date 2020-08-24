@@ -39,7 +39,9 @@
                 <strong>dodajte novu</strong>
               </p>
               <div class="icon">
-                <font-awesome-icon icon="plus-circle" @click="triggerNewBeachForm()" />
+                <router-link to="/newbeachform" class="navbar-item">
+                  <font-awesome-icon icon="plus-circle" />
+                </router-link>
               </div>
             </div>
           </nav>
@@ -61,16 +63,6 @@
         </div>
       </div>
     </div>
-    <div class="modal" :class="{'is-active': isActiveNewForm}">
-      
-      <div class="modal-background">
-        
-      </div>
-      <div class="modal-content">
-        <div class="title">Nova plaža</div>
-        <NewBeachForm :isSubmitModalActive="isActiveNewForm"/>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -78,11 +70,11 @@
 import Navigation from "../components/Navigation.vue";
 import { beaches } from "../seed.js";
 import BeachCard from "../components/BeachCard";
-import NewBeachForm from "../components/NewBeachForm";
+import { bus } from "../main";
 export default {
-  components: { BeachCard, Navigation, NewBeachForm },
+  components: { BeachCard, Navigation },
   data() {
-    return { beaches, searchResult: "", isActiveNewForm: false };
+    return { beaches, searchResult: "", bus };
   },
   methods: {
     searchBeaches() {
@@ -100,9 +92,19 @@ export default {
         });
       }
     },
-    triggerNewBeachForm() {
-      this.isActiveNewForm = !this.isActiveNewForm;
+    scrollToCard() {
+      let cards = this.$el.querySelectorAll(".beach-card");
+    
+      cards[1].scrollIntoView();
     },
+  },
+  created() {
+    bus.$on("showCardInGallery", (beach) => {
+      this.scrollToCard(beach);
+    });
+  },
+  mounted() {
+    this.scrollToCard();
   },
 };
 </script>
@@ -115,7 +117,7 @@ export default {
 .hidden {
   display: none;
 }
-.modal-background{
-  background:white;
+.modal-background {
+  background: white;
 }
 </style>

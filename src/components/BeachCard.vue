@@ -1,5 +1,5 @@
 <template>
-  <div class="beach-card">
+  <div class="beach-card-instance">
     <div class="modal" :class="{'is-active': isCommentModalActive}">
       <div class="modal-background"></div>
       <div class="modal-content">
@@ -101,7 +101,7 @@
           <article class="media">
             <figure class="media-left">
               <p class="image is-64x64">
-                <img src="https://bulma.io/images/placeholders/128x128.png" />
+                <img :src="this.user.photo" />
               </p>
             </figure>
             <div class="media-content">
@@ -132,12 +132,14 @@
 <script>
 import BeachCommentsModal from "../components/BeachCommentsModal";
 import { beaches } from "../seed.js";
+import {user} from "../user.js";
 export default {
   data() {
     return {
       isModalActive: false,
       beaches,
       isCommentModalActive: false,
+      user
     };
   },
   props: {
@@ -152,10 +154,10 @@ export default {
     },
     submitComment() {
       let newComment = {
-        username: "temp-user",
+        username: this.user.username,
         commentBody: this.$refs.commentText.value,
         photo:
-          "https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=660&q=80",
+          this.user.photo,
       };
       if (this.$refs.commentText.value) {
         this.beaches
@@ -181,7 +183,7 @@ export default {
 };
 </script>
 <style scoped>
-.beach-card {
+.beach-card-instance {
   display: flex;
   height: auto;
   padding: 2%;
