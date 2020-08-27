@@ -5,7 +5,6 @@
         v-for="(beach, index) in beaches"
         :key="index"
         class="card"
-        @click="showCardInGallery(index)"
       >
         <div class="card-image">
           <figure class="image is-4by3">
@@ -98,5 +97,10 @@ export default {
 }
 .has-text-info {
   color: #00d1b2 !important;
+}
+.image img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
 }
 </style>

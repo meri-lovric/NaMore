@@ -40,60 +40,66 @@
           <nav class="level is-mobile">
             <div class="level-item has-text-centered">
               <div>
-                <p class="title">
+                <p class="title" @mouseover="hover=true" @mouseleave="hover=false">
                   <font-awesome-icon
                     icon="coffee"
                     :class="{'has-text-success' : beach.options.bar}"
                   />
+                  <span v-if="hover">Beach Bar</span>
                 </p>
               </div>
             </div>
             <div class="level-item has-text-centered">
               <div>
-                <p class="title">
+                <p class="title" @mouseover="hover=true" @mouseleave="hover=false">
                   <font-awesome-icon
                     icon="umbrella-beach"
                     :class="{'has-text-success' : beach.options.shade}"
                   />
+                  <span v-if="hover">Hlad</span>
                 </p>
               </div>
             </div>
 
             <div class="level-item has-text-centered">
               <div>
-                <p class="title">
+                <p class="title" @mouseover="hover=true" @mouseleave="hover=false">
                   <font-awesome-icon
                     icon="child"
                     :class="{'has-text-success' : beach.options.kids}"
                   />
+                  <span v-if="hover">Djeca</span>
                 </p>
               </div>
             </div>
 
             <div class="level-item has-text-centered">
               <div>
-                <p class="title">
+                <p class="title" @mouseover="hover=true" @mouseleave="hover=false">
                   <font-awesome-icon icon="dog" :class="{'has-text-success' : beach.options.pets}" />
+                  <span v-if="hover">Životinje</span>
                 </p>
               </div>
             </div>
             <div class="level-item has-text-centered">
               <div>
-                <p class="title">
+                <p class="title" @mouseover="hover=true" @mouseleave="hover=false">
                   <font-awesome-icon
                     icon="parking"
                     :class="{'has-text-success' : beach.options.parking}"
                   />
+                  <span v-if="hover">Parking</span>
                 </p>
               </div>
             </div>
             <div class="level-item has-text-centered">
               <div>
-                <p class="title">
+                <p class="title" @mouseover="hover=true" @mouseleave="hover=false">
                   <font-awesome-icon
                     icon="utensils"
                     :class="{'has-text-success' : beach.options.food}"
                   />
+                  <span v-if="hover">Hrana</span>
                 </p>
               </div>
             </div>
@@ -132,14 +138,15 @@
 <script>
 import BeachCommentsModal from "../components/BeachCommentsModal";
 import { beaches } from "../seed.js";
-import {user} from "../user.js";
+import { user } from "../user.js";
 export default {
   data() {
     return {
       isModalActive: false,
       beaches,
       isCommentModalActive: false,
-      user
+      user,
+      hover: false,
     };
   },
   props: {
@@ -156,8 +163,7 @@ export default {
       let newComment = {
         username: this.user.username,
         commentBody: this.$refs.commentText.value,
-        photo:
-          this.user.photo,
+        photo: this.user.photo,
       };
       if (this.$refs.commentText.value) {
         this.beaches
@@ -195,5 +201,13 @@ export default {
 }
 .comments {
   cursor: pointer;
+}
+span{
+  font-size: x-small;
+}
+.image img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
 }
 </style>

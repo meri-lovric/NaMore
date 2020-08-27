@@ -28,10 +28,10 @@
           <div class="level-item image is-128x128">
             <img class="is-rounded" :src="user.photo" />
           </div>
-          <div class="level-item">
+          <div class="level-item username">
             <strong>{{user.name}}</strong>
+            @{{user.username}}
           </div>
-          <div class="level-item">@{{user.username}}</div>
         </div>
       </div>
       <strong>
@@ -98,5 +98,14 @@ export default {
 
 .hidden {
   display: none;
+}
+.image img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+.username{
+  display:flex;
+  flex-direction: column;
 }
 </style>

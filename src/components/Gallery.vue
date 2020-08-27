@@ -5,7 +5,7 @@
       <h2 class="subtitle">
         <div class="field has-addons">
           <p class="control">
-            <input class="input" type="text" placeholder="Find a friend" />
+            <input class="input" type="text" placeholder="Pretraži omiljene plaže" />
           </p>
           <p class="control">
             <button class="button">Search</button>
@@ -13,7 +13,7 @@
         </div>
       </h2>
       <div class="columns is-multiline">
-        <div v-for="(beach, index) in beaches" :key="index" class="card column is-4">
+        <div v-for="(beach, index) in filteredBeaches" :key="index" class="card column is-4">
           <div class="card-image">
             <figure class="image is-4by3">
               <img :src="beach.url" alt="Placeholder image" />
@@ -39,11 +39,21 @@ export default {
   data() {
     return { beaches };
   },
+  computed:{
+    filteredBeaches: function(){
+      return this.beaches.filter((beach) => beach.isClicked);
+    }
+  }
 };
 </script>
 <style scoped>
 .subtitle {
   display: flex;
   justify-content: center;
+}
+.image img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
 }
 </style>

@@ -55,7 +55,7 @@
                 :key="`option-${index}`"
                 @click="changeTab(option.id)"
               >
-                <a>{{option.title}}{{index}}</a>
+                <a>{{option.title}}</a>
               </li>
             </ul>
           </div>
@@ -105,7 +105,7 @@ export default {
         },
         {
           id: 3,
-          title: "Collection",
+          title: "Gallery",
           isActive: false,
         },
       ],
