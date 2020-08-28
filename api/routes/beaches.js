@@ -1,31 +1,56 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
+const multer = require("multer");
+
+const storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, "./uploads/");
+  },
+  filename: function(req, file, cb) {
+    const now = new Date().toISOString();
+    const date = now.replace(/:/g, "-");
+    cb(null, date + file.originalname);
+  },
+});
+const fileFilter = (req, file, cb) => {
+  // accept a file
+  if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+    cb(null, true);
+  } else {
+    //reject a file
+    cb(null, false);
+  }
+};
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 1024 * 1024 * 5 },
+});
 
 const Beach = require("../models/beach");
-const { update } = require("../models/beach");
+const { update } = require("../models/beach"); // cemu ovo???
 
 router.get("/", (req, res, next) => {
   Beach.find()
-    .select('name description author photoUrl _id')
+    .select("name description author beachImage _id")
     .exec()
     .then((docs) => {
       const response = {
         count: docs.length,
-        beaches: docs.map(doc => {
-          return{
+        beaches: docs.map((doc) => {
+          return {
             name: doc.name,
             description: doc.description,
             author: doc.author,
-            photo: doc.photoUrl,
+            beachImage: doc.beachImage,
             _id: doc._id,
-            request:{
-              type: 'GET',
-              url: 'http://localhost:3000/beaches/' + doc._id //later hardcode domain
-            }
-          }
-        })
-      }
+            request: {
+              type: "GET",
+              url: "http://localhost:3000/beaches/" + doc._id, //later hardcode domain
+            },
+          };
+        }),
+      };
       if (docs.length >= 0) {
         res.status(200).json(response);
       } else {
@@ -42,13 +67,14 @@ router.get("/", (req, res, next) => {
     });
 }); //get method handles incoming get req
 
-router.post("/", (req, res, next) => {
+router.post("/", upload.single("beachImage"), (req, res, next) => {
+  console.log(req.file);
   const beach = new Beach({
     _id: new mongoose.Types.ObjectId(), // creates unique id
     name: req.body.name,
     description: req.body.description,
     author: req.body.author,
-    photoUrl: req.body.photo,
+    beachImage: req.file.path
   });
   beach
     .save()
@@ -56,16 +82,15 @@ router.post("/", (req, res, next) => {
       console.log(result);
       res.status(201).json({
         message: "Successfully created new beach",
-        createdBeach: 
-        {
+        createdBeach: {
           name: result.name,
           description: result.description,
           author: result.author,
           photo: result.photoUrl,
-          request:{
-              type: 'GET',
-              url: "http://localhost:3000/beaches/" + result._id
-          }
+          request: {
+            type: "GET",
+            url: "http://localhost:3000/beaches/" + result._id,
+          },
         },
       });
     })
@@ -81,6 +106,7 @@ router.post("/", (req, res, next) => {
 router.get("/:beachId", (req, res, next) => {
   const id = req.params.beachId;
   Beach.findById(id)
+    .select("name description author beachImage _id")
     .exec()
     .then((doc) => {
       console.log("From database: " + doc);

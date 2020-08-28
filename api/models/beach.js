@@ -5,7 +5,7 @@ const beachSchema = mongoose.Schema({
     name: { type:String, required: true},
     description: { type:String, required: true},
     author: { type:String, required: true},
-    photoUrl: { type:String, required: true}
+    beachImage: {type:String, required: true}
 });
 
 module.exports = mongoose.model('Beach', beachSchema);

@@ -7,6 +7,8 @@ const mongoose = require("mongoose");
 
 const beachRoutes = require("./api/routes/beaches");
 const userRoutes = require("./api/routes/users");
+const postRoutes = require("./api/routes/posts");
+
 mongoose.connect(
   "mongodb+srv://na-more:" +
     process.env.MONGO_ATLAS_PW +
@@ -15,7 +17,8 @@ mongoose.connect(
 );
 mongoose.Promise = global.Promise;
   //MIDDLEWARE
-  app.use(morgan("dev"));
+app.use(morgan("dev"));
+app.use('/uploads',express.static('uploads'))
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 // handling CORS errors
@@ -38,6 +41,7 @@ app.use("/beaches", beachRoutes); //send status code 200 (everything OK) and jso
 //only requests that start with '/beaches' will be handled as the handler that is
 //the second argument
 app.use("/users", userRoutes);
+app.use("/posts", postRoutes);
 
 app.use((req, res, next) => {
   const error = new Error("Not found");
