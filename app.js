@@ -15,10 +15,16 @@ mongoose.connect(
     "@na-more.vg2vw.mongodb.net/na-more?retryWrites=true&w=majority",
   { useNewUrlParser: true, useUnifiedTopology: true }
 );
+mongoose.set('useCreateIndex', true); //to bypass deprication warning:
+// collection.ensureIndex is deprecated. Use createIndexes instead.
+
 mongoose.Promise = global.Promise;
-  //MIDDLEWARE
+  
+//MIDDLEWARE
 app.use(morgan("dev"));
-app.use('/uploads',express.static('uploads'))
+
+app.use('/uploads',express.static('uploads'));
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 // handling CORS errors

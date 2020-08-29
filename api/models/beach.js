@@ -4,7 +4,7 @@ const beachSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId, //not a constructor like in beaches.js but just tells the expected type
     name: { type:String, required: true},
     description: { type:String, required: true},
-    author: { type:String, required: true},
+    author: { type: mongoose.Schema.Types.ObjectId, ref:'User', required: true},
     beachImage: {type:String, required: true}
 });
 
