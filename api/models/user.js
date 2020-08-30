@@ -10,9 +10,5 @@ const userSchema = mongoose.Schema({
   //searching and indexing
   password: {type: String, required:true},
   userImage: { type: String, required: true },
-  statusNum: { type: Number, default: 0 },
-  friendsNum: { type: Number, default: 0 },
-  beachesNum: { type: Number, default: 0 },
-  likedNum: { type: Number, default: 0 },
-});
+ });
 module.exports = mongoose.model("User", userSchema);

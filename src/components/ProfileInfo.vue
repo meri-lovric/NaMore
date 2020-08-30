@@ -3,19 +3,19 @@
     <div class="level-item has-text-centered" @click="changeTab(1)">
       <div>
         <p class="heading">Statusi</p>
-        <p class="title">{{postsNumber}}</p>
+        <p class="title">{{statusNum}}</p>
       </div>
     </div>
     <div class="level-item has-text-centered" @click="changeTab(2)">
       <div>
         <p class="heading">Prijatelji</p>
-        <p class="title">{{friendsNumber}}</p>
+        <p class="title">{{friendsNum}}</p>
       </div>
     </div>
     <div class="level-item has-text-centered" @click="changeTab(3)">
       <div>
         <p class="heading">Plaže</p>
-        <p class="title">{{beachesNumber}}</p>
+        <p class="title">{{galleryNum}}</p>
       </div>
     </div>
   </nav>
@@ -24,13 +24,15 @@
 import { posts } from "../posts.js";
 import { users } from "../users.js";
 import { beaches } from "../seed.js";
-
 export default {
   data() {
-    return { posts, users, beaches };
+    return { posts, users, beaches, beachesNumber: 0 };
   },
   props: {
-    userId: Number,
+    userId: String,
+    galleryNum: Number,
+    friendsNum: Number,
+    statusNum: Number
   },
   computed: {
     postsNumber: function () {
@@ -40,10 +42,6 @@ export default {
     friendsNumber: function () {
       return this.users.length;
     },
-    beachesNumber: function () {
-      let filteredBeaches = this.beaches.filter((beach) => beach.isClicked);
-      return filteredBeaches.length;
-    },
   },
 };
 </script>
@@ -51,7 +49,7 @@ export default {
 .level {
   margin-top: 0.75rem;
 }
-.level-item{
-  cursor:pointer;
+.level-item {
+  cursor: pointer;
 }
 </style>

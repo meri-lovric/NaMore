@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 exports.posts_get_all = (req, res, next) => {
   Post.find()
     .select("user _id text time")
-    .populate("user", "name username photoUrl")
+    .populate("user", "name username userImage")
     .exec()
     .then((docs) => {
       const response = {

@@ -14,7 +14,7 @@
       <article class="tile is-child notification is-info">
         <p class="title">{{beach.name}}</p>
         <figure class="image is-4by3">
-          <img :src="beach.url" />
+          <img :src="getImage()+beach.beachImage" />
         </figure>
       </article>
     </div>
@@ -27,15 +27,16 @@
             <div class="level-item has-text-centered">
               <div>
                 <p class="heading">Sviđa mi se</p>
-                <p class="title">{{beach.votes}}</p>
+                <p class="title">{{beach.likes}}</p>
               </div>
             </div>
-            <div class="level-item has-text-centered" @click="activateModal()">
+           <!-- <div class="level-item has-text-centered" @click="activateModal()">
               <div class="comments">
                 <p class="heading">Komentari</p>
                 <p class="title">{{beachCommentsNumber}}</p>
               </div>
-            </div>
+             
+            </div> !-->
           </nav>
           <nav class="level is-mobile">
             <div class="level-item has-text-centered">
@@ -107,7 +108,7 @@
           <article class="media">
             <figure class="media-left">
               <p class="image is-64x64">
-                <img :src="this.user.photo" />
+               <!-- <img :src="getImage()+beach.user.userImage" /> !-->
               </p>
             </figure>
             <div class="media-content">
@@ -158,6 +159,9 @@ export default {
   methods: {
     activateModal() {
       this.isModalActive = !this.isModalActive;
+    },
+     getImage() {
+      return "http://localhost:3000/";
     },
     submitComment() {
       let newComment = {

@@ -18,34 +18,45 @@
           </p>
         </div>
       </h2>
-      <div v-for="(userPost, index) in userPosts" :key="index">
-        <SinglePost :post="userPost" :class="{ hidden: userPost.isHidden }" />
+      <div class="column" v-if="this.requestFinished">
+        <div  v-for="(post, index) in userPosts" :key="index">
+          <SinglePost :post="post" :class="{ hidden: post.isHidden }" />
+        </div>
+        <strong>
+          <p>{{searchResult}}</p>
+        </strong>
       </div>
-      <strong><p >{{searchResult}}</p></strong>
     </div>
   </section>
 </template>
 
 <script>
 import SinglePost from "./SinglePost.vue";
-import { posts } from "../posts.js";
+import axios from "axios";
+
 export default {
   props: {
-    userId: Number,
+    userId: String,
   },
   components: { SinglePost },
   data() {
-    return { posts, searchResult: "" };
+    return {
+      searchResult: "",
+      posts: [],
+      requestFinished: false,
+      childMessage: 0,
+    };
   },
   computed: {
     userPosts: function () {
-      return this.posts.filter((post) => post.id == this.userId);
+      console.log(this.posts);
+      return this.posts.posts.filter((post) => post.user._id == this.userId);
     },
   },
   methods: {
     searchPosts() {
       this.userPosts.forEach((post) => {
-        if (!post.postBody.includes(this.$refs.postText.value)) {
+        if (!post.text.includes(this.$refs.postText.value)) {
           post.isHidden = true;
           this.searchResult = "Nema rezultata";
         } else {
@@ -58,6 +69,24 @@ export default {
         });
       }
     },
+    emitToParent() {
+      this.childMessage = this.userPosts.length;
+      this.$emit("childToParent", this.childMessage);
+    },
+  },
+  mounted() {
+    var self = this;
+    axios
+      .get("http://localhost:3000/posts/")
+      .then((response) => {
+        self.posts = JSON.parse(JSON.stringify(response.data));
+        console.log(self.posts);
+        this.requestFinished = true;
+        this.emitToParent();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   },
 };
 </script>
@@ -68,5 +97,9 @@ export default {
 }
 .hidden {
   display: none;
+}
+.column{
+  display:flex;
+  flex-direction: column-reverse;
 }
 </style>

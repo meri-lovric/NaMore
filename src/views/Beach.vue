@@ -52,7 +52,7 @@
       <div class="column">
         <div
           class="beach-card"
-          v-for="(beach,index) in beaches"
+          v-for="(beach,index) in beaches.beaches"
           :key="index"
           :class="{hidden: beach.isHidden}"
         >
@@ -68,13 +68,14 @@
 
 <script>
 import Navigation from "../components/Navigation.vue";
-import { beaches } from "../seed.js";
 import BeachCard from "../components/BeachCard";
 import { bus } from "../main";
+import axios from "axios";
+
 export default {
   components: { BeachCard, Navigation },
   data() {
-    return { beaches, searchResult: "", bus };
+    return { searchResult: "", bus, beaches: [] };
   },
   methods: {
     searchBeaches() {
@@ -92,19 +93,24 @@ export default {
         });
       }
     },
-    scrollToCard() {
-      let cards = this.$el.querySelectorAll(".beach-card");
+   
     
-      cards[1].scrollIntoView();
-    },
   },
   created() {
-    bus.$on("showCardInGallery", (beach) => {
-      this.scrollToCard(beach);
-    });
+   
   },
   mounted() {
-    this.scrollToCard();
+
+    var self = this;
+    axios
+      .get("http://localhost:3000/beaches")
+      .then((response) => {
+        self.beaches = JSON.parse(JSON.stringify(response.data));
+        console.log(self.beaches);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   },
 };
 </script>

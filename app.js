@@ -4,6 +4,7 @@ const app = express(); //spins up express app that provides utility methods
 const morgan = require("morgan"); //calls next function and provides request info in console
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 const beachRoutes = require("./api/routes/beaches");
 const userRoutes = require("./api/routes/users");
@@ -15,28 +16,33 @@ mongoose.connect(
     "@na-more.vg2vw.mongodb.net/na-more?retryWrites=true&w=majority",
   { useNewUrlParser: true, useUnifiedTopology: true }
 );
-mongoose.set('useCreateIndex', true); //to bypass deprication warning:
+mongoose.set("useCreateIndex", true); //to bypass deprication warning:
 // collection.ensureIndex is deprecated. Use createIndexes instead.
 
 mongoose.Promise = global.Promise;
-  
+
 //MIDDLEWARE
+app.use(cors());
 app.use(morgan("dev"));
 
-app.use('/uploads',express.static('uploads'));
+app.use("/uploads", express.static("uploads"));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 // handling CORS errors
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*"); //gives access to any client, we can restrict it by changin * --> e.g http://my-page.com
+  res.setHeader("Access-Control-Allow-Origin", "*"); //gives access to any client, we can restrict it by changin * --> e.g http://my-page.com
   // not necessarily a protection mechanism
-  res.header(
+  res.setHeader("Access-Control-Allow-Credentials", true);
+  res.setHeader(
     "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    "Origin, Cache-Control, Accept, X-Access-Token, X-Request-With,Content-Type, Access-Control-Request-Method, Authorization"
   );
   if (req.method === "OPTIONS") {
-    res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "PUT, POST, PATCH, DELETE, GET"
+    );
     return res.status(200).json({});
   }
   next();

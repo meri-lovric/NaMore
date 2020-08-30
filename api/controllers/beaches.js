@@ -4,7 +4,6 @@ const mongoose = require("mongoose");
 
 exports.beaches_get_all = (req, res, next) => {
   Beach.find()
-    .select("name description author beachImage _id")
     .populate("author", "name username")
     .exec()
     .then((docs) => {
@@ -16,6 +15,9 @@ exports.beaches_get_all = (req, res, next) => {
             description: doc.description,
             author: doc.author,
             beachImage: doc.beachImage,
+            isClicked: doc.isClicked,
+            likes: doc.likes,
+            options:doc.options,
             _id: doc._id,
             request: {
               type: "GET",
@@ -85,7 +87,6 @@ exports.beaches_create_beach = (req, res, next) => {
 exports.beaches_get_one = (req, res, next) => {
   const id = req.params.beachId;
   Beach.findById(id)
-    .select("name description author beachImage _id")
     .populate("author", "name username")
     .exec()
     .then((doc) => {

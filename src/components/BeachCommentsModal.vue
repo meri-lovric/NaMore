@@ -4,20 +4,20 @@
     <div class="modal-content">
       <div class="notification">
         <button class="delete" @click="exitModal()"></button>
-        <Comment v-for="(comment,index) in beachComments" :key="index" :comment="comment" />
+  <!--      <Comment v-for="(comment,index) in beachComments" :key="index" :comment="comment" /> !-->
       </div>
     </div>
   </div>
 </template>
 <script>
-import Comment from "../components/Comment";
+//import Comment from "../components/Comment";
 import { beaches } from "../seed.js";
 export default {
   data() {
     return { beaches };
   },
   components: {
-    Comment,
+    //Comment,
   },
   props: {
     isModalActive: Boolean,

@@ -25,14 +25,23 @@
       <div class="hero-body">
         <div class="container has-text-centered">
           <h1 class="title">
-            <img :src="user.photo" />
+            <div class="image-shadow-wrapper">
+              <div class="image-shadow">
+                <img :src="getImage()+user.userImage" />
+              </div>
+            </div>
           </h1>
           <h2 class="subtitle">
             {{user.name}}
             <br />
             @{{user.username}}
           </h2>
-          <ProfileInfo :userId="user.id" />
+          <ProfileInfo
+            :userId="user._id"
+            :galleryNum="galleryNumfromChild"
+            :friendsNum="friendsNumfromChild"
+            :statusNum="statusNumfromChild"
+          />
 
           <input
             class="input is-rounded"
@@ -63,14 +72,15 @@
       </div>
     </section>
     <div class :class="{hidden: !options.find(option => option.id === 1).isActive}">
-      <Posts :userId="user.id" />
+      <Posts :userId="user._id" @childToParent="onStatusChildMount" />
     </div>
     <div :class="{hidden: !options.find(option => option.id === 2).isActive}">
-      <FriendsList />
+      <FriendsList @childToParent="onFriendsChildMount" />
     </div>
     <div :class="{hidden: !options.find(option => option.id === 3).isActive}">
-      <Gallery />
+      <Gallery @childToParent="onGalleryChildMount" />
     </div>
+    <div :class="{hidden: !options.find(option => option.id === 4).isActive}">Liked beaches</div>
   </div>
 </template>
 
@@ -79,9 +89,8 @@ import ProfileInfo from "../components/ProfileInfo";
 import FriendsList from "../components/FriendsList";
 import Posts from "../components/Posts.vue";
 import Gallery from "../components/Gallery";
-import { posts } from "../posts.js";
-import { user } from "../user.js";
 import Navigation from "../components/Navigation";
+import axios from "axios";
 export default {
   components: {
     ProfileInfo,
@@ -108,13 +117,34 @@ export default {
           title: "Gallery",
           isActive: false,
         },
+
+        {
+          id: 4,
+          title: "Liked",
+          isActive: false,
+        },
       ],
-      user,
-      posts,
+      user: {},
+      // posts,
       isModalActive: false,
+      galleryNumfromChild: 0,
+      friendsNumfromChild: 0,
+      statusNumfromChild: 0,
     };
   },
   methods: {
+    onGalleryChildMount(value) {
+      this.galleryNumfromChild = value;
+    },
+    onFriendsChildMount(value) {
+      this.friendsNumfromChild = value;
+    },
+    onStatusChildMount(value) {
+      this.statusNumfromChild = value;
+    },
+    getImage() {
+      return "http://localhost:3000/";
+    },
     changeTab(optionId) {
       let clickedOption = this.options.find((option) => option.id === optionId);
       clickedOption.isActive = !clickedOption.isActive;
@@ -124,24 +154,46 @@ export default {
       disableOptions.forEach((option) => (option.isActive = false));
     },
     submitStatus() {
-      let newPost = {
-        id: this.user.id,
-        postBody: this.$refs.statusText.value,
-        username: this.user.username,
-        name: this.user.name,
-        photo: this.user.photo,
-        isHidden: false,
-      };
-      if (this.$refs.statusText.value) {
-        posts.push(newPost);
-        this.$refs.statusText.value = "";
-      } else {
-        this.isModalActive = true;
-      }
+      axios
+        .post(
+          "http://localhost:3000/posts/",
+          {
+            userId: this.user._id,
+            text: this.$refs.statusText.value,
+          },
+          {
+            headers: {
+              Authorization:
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1lcmkubG92cmljQG1haWwuY29tIiwidXNlcklkIjoiNWY0YWM0MWU2NzI3N2YzMzQwM2JmODY1IiwiaWF0IjoxNTk4ODI3NjkzLCJleHAiOjE1OTg4MzEyOTN9._Ij17kVJzqqG_BBNQ7EUm5sdt6AfYAi1LbOedLJlehE",
+            },
+          }
+        )
+        .then((response) => {
+          this.$refs.statusText.value = "";
+          console.log(response);
+        })
+        .catch((error) => {
+          if (!this.$refs.statusText.value) {
+            this.isModalActive = true;
+          }
+          console.log(error);
+        });
     },
     exitModal() {
       this.isModalActive = false;
     },
+  },
+  mounted() {
+    var self = this;
+    axios
+      .get("http://localhost:3000/users/5f4ac41e67277f33403bf865")
+      .then((response) => {
+        self.user = JSON.parse(JSON.stringify(response.data));
+        console.log(self.user);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   },
 };
 </script>
@@ -153,8 +205,55 @@ export default {
 .button {
   margin-top: 0.75rem;
 }
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.title {
+  width: 20rem;
+  height: 20rem;
+}
 .title img {
-  width: 35%;
-  height: 35%;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.image-shadow-wrapper {
+  width: 300px;
+  height: 300px;
+  margin: 0 auto;
+  transition: all 0.4s;
+}
+.image-shadow-wrapper:hover {
+  transform: scale(1.025);
+}
+
+.image-shadow {
+  position: relative;
+  background: var(--image) no-repeat center;
+  border-radius: 5px;
+  width: 300px;
+  height: 300px;
+  backface-visibility: hidden;
+}
+.image-shadow::after {
+  content: "";
+  position: absolute;
+  top: 1%;
+  left: 0.5%;
+  width: 99%;
+  height: 99%;
+  background: var(--image) no-repeat center;
+  filter: blur(0);
+  opacity: 0;
+  transition: all 0.4s;
+  z-index: -1;
+}
+
+.image-shadow:hover::after {
+  opacity: 1;
+  filter: blur(15px);
 }
 </style>

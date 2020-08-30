@@ -44,7 +44,7 @@
 import { users } from "../users.js";
 export default {
   data() {
-    return { users, searchResult: "" };
+    return { users, searchResult: "", childMessage:0 };
   },
   methods: {
     searchPosts() {
@@ -62,7 +62,14 @@ export default {
         });
       }
     },
+    emitToParent(){
+      this.childMessage = this.users.length;
+      this.$emit('childToParent', this.childMessage)
+    }
   },
+  mounted(){
+    this.emitToParent();
+  }
 };
 </script>
 <style scoped>

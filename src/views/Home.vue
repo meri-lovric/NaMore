@@ -7,7 +7,7 @@
     </div>
   </section>
   <router-view />
-  <CitiesContainer />
+  <BeachesContainer />
   <body>
     <section class="section">
       <div class="container">
@@ -16,10 +16,8 @@
           A simple container to divide your page into
           <strong>sections</strong>, like the one you're currently reading
         </h2>
-        <div class="container" v-for="(post,index) in posts" :key="index" >
-          <SinglePost
-            :post="post"
-          />
+        <div class="container" v-for="(post,index) in posts.posts" :key="index">
+          <SinglePost :post="post" />
         </div>
       </div>
     </section>
@@ -30,22 +28,37 @@
 <script>
 // @ is an alias to /src
 import HeroTitle from "../components/HeroTitle";
-import CitiesContainer from "../components/CitiesContainer.vue";
+import BeachesContainer from "../components/BeachesContainer.vue";
 import SinglePost from "../components/SinglePost.vue";
 import Navigation from "../components/Navigation.vue";
-import {posts} from "../posts.js";
+import axios from "axios";
 export default {
   name: "App",
   components: {
     HeroTitle,
-    CitiesContainer,
+    BeachesContainer,
     SinglePost,
     Navigation,
   },
   data() {
     return {
-      posts
+      posts: [],
     };
+  },
+  methods: {
+    
+  },
+  mounted() {
+    var self = this;
+    axios
+      .get("http://localhost:3000/posts")
+      .then((response) => {
+        self.posts = JSON.parse(JSON.stringify(response.data));
+        console.log(self.posts);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   },
 };
 </script>
