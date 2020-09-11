@@ -30,7 +30,7 @@
                 <p class="title">{{beach.likes}}</p>
               </div>
             </div>
-           <!-- <div class="level-item has-text-centered" @click="activateModal()">
+            <!-- <div class="level-item has-text-centered" @click="activateModal()">
               <div class="comments">
                 <p class="heading">Komentari</p>
                 <p class="title">{{beachCommentsNumber}}</p>
@@ -64,11 +64,13 @@
 
             <div class="level-item has-text-centered">
               <div>
-                <p class="title" @mouseover="hover=true" @mouseleave="hover=false">
-                  <font-awesome-icon
-                    icon="child"
-                    :class="{'has-text-success' : beach.options.kids}"
-                  />
+                <p
+                  class="title"
+                  @mouseover="hover=true"
+                  @mouseleave="hover=false"
+                  :class="{'has-text-success' : beach.options.kids}"
+                >
+                  <font-awesome-icon icon="child" />
                   <span v-if="hover">Djeca</span>
                 </p>
               </div>
@@ -76,39 +78,48 @@
 
             <div class="level-item has-text-centered">
               <div>
-                <p class="title" @mouseover="hover=true" @mouseleave="hover=false">
-                  <font-awesome-icon icon="dog" :class="{'has-text-success' : beach.options.pets}" />
+                <p
+                  class="title"
+                  @mouseover="hover=true"
+                  @mouseleave="hover=false"
+                  :class="{'has-text-success' : beach.options.pets}"
+                >
+                  <font-awesome-icon icon="dog" />
                   <span v-if="hover">Životinje</span>
                 </p>
               </div>
             </div>
             <div class="level-item has-text-centered">
               <div>
-                <p class="title" @mouseover="hover=true" @mouseleave="hover=false">
-                  <font-awesome-icon
-                    icon="parking"
-                    :class="{'has-text-success' : beach.options.parking}"
-                  />
+                <p
+                  class="title"
+                  @mouseover="hover=true"
+                  @mouseleave="hover=false"
+                  :class="{'has-text-success' : beach.options.parking}"
+                >
+                  <font-awesome-icon icon="parking" />
                   <span v-if="hover">Parking</span>
                 </p>
               </div>
             </div>
             <div class="level-item has-text-centered">
               <div>
-                <p class="title" @mouseover="hover=true" @mouseleave="hover=false">
-                  <font-awesome-icon
-                    icon="utensils"
-                    :class="{'has-text-success' : beach.options.food}"
-                  />
+                <p
+                  class="title"
+                  @mouseover="hover=true"
+                  @mouseleave="hover=false"
+                  :class="{'has-text-success' : beach.options.food}"
+                >
+                  <font-awesome-icon icon="utensils" />
                   <span v-if="hover">Hrana</span>
                 </p>
               </div>
             </div>
           </nav>
-          <article class="media">
+          <article v-if="canActivate()" class="media">
             <figure class="media-left">
               <p class="image is-64x64">
-               <!-- <img :src="getImage()+beach.user.userImage" /> !-->
+                <!-- <img :src="getImage()+beach.user.userImage" /> !-->
               </p>
             </figure>
             <div class="media-content">
@@ -140,6 +151,8 @@
 import BeachCommentsModal from "../components/BeachCommentsModal";
 import { beaches } from "../seed.js";
 import { user } from "../user.js";
+import auth from "../auth/index";
+
 export default {
   data() {
     return {
@@ -160,7 +173,7 @@ export default {
     activateModal() {
       this.isModalActive = !this.isModalActive;
     },
-     getImage() {
+    getImage() {
       return "http://localhost:3000/";
     },
     submitComment() {
@@ -181,6 +194,10 @@ export default {
     exitCommentModal() {
       this.isCommentModalActive = false;
     },
+    canActivate() {
+      auth.checkAuth();
+      return auth.user.authenticated;
+    },
   },
   computed: {
     beachCommentsNumber: function () {
@@ -190,6 +207,9 @@ export default {
       return beachComments[0].comments.length;
     },
   },
+  mounted(){
+    console.log(this.beach.options.kids)
+  }
 };
 </script>
 <style scoped>
@@ -206,7 +226,7 @@ export default {
 .comments {
   cursor: pointer;
 }
-span{
+span {
   font-size: x-small;
 }
 .image img {

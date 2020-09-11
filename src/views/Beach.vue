@@ -1,5 +1,24 @@
 <template>
   <div>
+    <div class="tile is-ancestor">
+      <div class="modal" :class="{'is-active': isModalActive}">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+          <div class="notification is-danger">
+            <button class="delete" @click="exitModal()"></button>
+            Nedozvoljena radnja. Ulogirajte se ili napravite profil.
+            <div>
+              <button class="button is-rounded">
+                <router-link to="/signin" class="navbar-item">Sign-in</router-link>
+              </button>
+              <button class="button is-warning is-rounded">Sign-up</button>
+            </div>
+          </div>
+        </div>
+        <button class="modal-close is-large" aria-label="close"></button>
+      </div>
+    </div>
+
     <Navigation :isActiveLogo="true" />
     <section class="hero is-info is-large">
       <div class="hero-body">
@@ -30,19 +49,17 @@
                 </div>
               </div>
             </div>
-            <div class="icon">
+            <div v-if="canActivate()" class="icon">
               <font-awesome-icon icon="slash" />
             </div>
             <!-- Right side -->
-            <div class="level-right column">
+            <div v-if="canActivate()" class="level-right column">
               <p class="level-item subtitle is-5">
                 <strong>dodajte novu</strong>
               </p>
-              <div class="icon">
-                <router-link to="/newbeachform" class="navbar-item">
-                  <font-awesome-icon icon="plus-circle" />
-                </router-link>
-              </div>
+              <router-link to="/newbeachform" class="icon">
+                <font-awesome-icon icon="plus-circle" />
+              </router-link>
             </div>
           </nav>
         </div>
@@ -71,12 +88,13 @@ import Navigation from "../components/Navigation.vue";
 import BeachCard from "../components/BeachCard";
 import { bus } from "../main";
 import axios from "axios";
-
+import auth from "../auth/index";
 export default {
   components: { BeachCard, Navigation },
   data() {
-    return { searchResult: "", bus, beaches: [] };
+    return { searchResult: "", bus, beaches: [], isModalActive: false };
   },
+
   methods: {
     searchBeaches() {
       this.beaches.forEach((beach) => {
@@ -93,20 +111,29 @@ export default {
         });
       }
     },
-   
-    
+    exitModal() {
+      this.isModalActive = false;
+    },
+     canActivate() {
+      auth.checkAuth();
+      return auth.user.authenticated;
+    },
   },
-  created() {
-   
-  },
+  created() {},
   mounted() {
-
     var self = this;
     axios
       .get("http://localhost:3000/beaches")
       .then((response) => {
         self.beaches = JSON.parse(JSON.stringify(response.data));
-        console.log(self.beaches);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    axios
+      .get("http://localhost:3000/users")
+      .then((response) => {
+        self.users = JSON.parse(JSON.stringify(response.data));
       })
       .catch((error) => {
         console.log(error);
@@ -119,6 +146,7 @@ export default {
   cursor: pointer;
   font-size: x-large;
   transform: rotate(90deg);
+  color:white;
 }
 .hidden {
   display: none;

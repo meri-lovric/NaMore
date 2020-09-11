@@ -17,7 +17,7 @@ exports.beaches_get_all = (req, res, next) => {
             beachImage: doc.beachImage,
             isClicked: doc.isClicked,
             likes: doc.likes,
-            options:doc.options,
+            options: doc.options,
             _id: doc._id,
             request: {
               type: "GET",
@@ -26,6 +26,8 @@ exports.beaches_get_all = (req, res, next) => {
           };
         }),
       };
+      console.log(response);
+
       if (docs.length >= 0) {
         res.status(200).json(response);
       } else {
@@ -43,7 +45,7 @@ exports.beaches_get_all = (req, res, next) => {
 };
 
 exports.beaches_create_beach = (req, res, next) => {
-  console.log(req.file);
+  console.log("Pokrenut zahtjev za post");
   User.findById(req.body.author)
     .then((user) => {
       if (!user) {
@@ -57,6 +59,14 @@ exports.beaches_create_beach = (req, res, next) => {
         description: req.body.description,
         author: req.body.author,
         beachImage: req.file.path,
+        options: {
+          bar: req.body.options.bar,
+          shade: req.body.options.shade,
+          kids: req.body.options.kids,
+          pets: req.body.options.pets,
+          parking: req.body.options.parking,
+          food: req.body.options.food
+        },
       });
       return beach.save();
     })
@@ -68,6 +78,7 @@ exports.beaches_create_beach = (req, res, next) => {
           name: result.name,
           description: result.description,
           author: result.author,
+          options: result.options,
           request: {
             type: "GET",
             url: "http://localhost:3000/beaches/" + result._id,

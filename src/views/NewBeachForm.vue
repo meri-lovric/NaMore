@@ -12,7 +12,7 @@
       <div class="field">
         <label class="label">Slika plaže</label>
         <div class="control">
-          <input class="input" ref="beachUrl" type="text" placeholder="Url input" />
+          <input type="file" id="file" ref="file" @change="handleFileUpload()" />
         </div>
         <p class="help is-success">This username is available</p>
       </div>
@@ -103,39 +103,52 @@
 </template>
 <script>
 import { beaches } from "../seed.js";
+import axios from "axios";
+import auth from "../auth/index";
 export default {
   data() {
     return {
       beaches,
       isModalActive: false,
+      file: "",
+      authToken: "",
     };
   },
   methods: {
+    handleFileUpload() {
+      this.file = this.$refs.file.files[0];
+    },
     submitNewBeachForm() {
-      let newBeach = {
-        id: this.beaches[this.beaches.length - 1].id++,
-        name: this.$refs.beachName.value,
-        url: this.$refs.beachUrl.value,
-        description: this.$refs.beachDescription.value,
-        votes: 0,
-        isClicked: false,
-        isHidden: false,
-        comments: [],
-        options: {
-          bar: this.$refs.beachBar.checked,
-          shade: this.$refs.beachShade.checked,
-          kids: this.$refs.beachKids.checked,
-          pets: this.$refs.beachPets.checked,
-          parking: this.$refs.beachParking.checked,
-          food: this.$refs.beachFood.checked,
-        },
+      let formData = new FormData();
+      console.log(this.$refs.beachBar.checked);
+      formData.append("name", this.$refs.beachName.value);
+      formData.append("beachImage", this.file),
+        formData.append("description", this.$refs.beachDescription.value),
+        formData.append("author", auth.user.userObject._id);
+      let options ={
+        bar: this.$refs.beachBar.checked,
+        shade: this.$refs.beachShade.checked,
+        kids: this.$refs.beachKids.checked,
+        pets: this.$refs.beachPets.checked,
+        parking: this.$refs.beachParking.checked,
+        food: this.$refs.beachFood.checked,
       };
-      if (newBeach.name && newBeach.url && newBeach.description) {
-        this.beaches.push(newBeach);
-        this.$router.push({ name: "Beaches" });
-      } else {
-        this.isModalActive = true;
-      }
+      formData.append("options", options);
+      console.log(options)
+      axios
+        .post("http://localhost:3000/beaches", formData, {
+          headers: {
+            Authorization: this.authToken,
+          },
+        })
+        .then(() => {
+          console.log("Successfully added new beach");
+          this.$router.push({ name: "Beaches" });
+        })
+        .catch((error) => {
+          console.log(error)
+          this.isModalActive = true;
+        });
     },
     exitModal() {
       this.isModalActive = false;
@@ -143,6 +156,9 @@ export default {
     exitNewBeachForm() {
       this.$router.push({ name: "Beaches" });
     },
+  },
+  mounted() {
+    this.authToken = auth.getAuthHeader();
   },
 };
 </script>

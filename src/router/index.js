@@ -4,12 +4,13 @@ import Home from "../views/Home.vue";
 import Profile from "../views/Profile.vue";
 import Beach from "../views/Beach.vue";
 import NewBeachForm from "../views/NewBeachForm.vue";
-import SignIn from '../views/SignIn.vue';
+import SignIn from "../views/SignIn.vue";
+import SignUp from "../views/SignUp.vue";
 Vue.use(VueRouter);
 
 const routes = [
   {
-    path: "/",
+    path: "/home",
     name: "Home",
     component: Home,
   },
@@ -26,6 +27,7 @@ const routes = [
     path: "/profile",
     name: "Profile",
     component: Profile,
+    props: true,
   },
   {
     path: "/beaches",
@@ -36,11 +38,17 @@ const routes = [
     path: "/newbeachform",
     name: "NewBeach",
     component: NewBeachForm,
+    props: true,
   },
   {
-    path: "/signin",
+    path: "/",
     name: "SignIn",
     component: SignIn,
+  },
+  {
+    path: "/signup",
+    name: "SignUp",
+    component: SignUp,
   },
 ];
 

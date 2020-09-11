@@ -7,10 +7,9 @@
           <button class="delete" @click="exitModal()"></button>
           Nedozvoljena radnja. Ulogirajte se ili napravite profil.
           <div>
-            <router-link to="/signin" class="navbar-item">
-              <button class="button is-rounded">Sign-in</button>
-            </router-link>
-
+            <button class="button is-rounded">
+              <router-link to="/signin" class="navbar-item">Sign-in</router-link>
+            </button>
             <button class="button is-warning is-rounded">Sign-up</button>
           </div>
         </div>
@@ -29,8 +28,9 @@
           <div class="media">
             <div class="media-left">
               <span
+                v-if="renderComponent"
                 class="icon is-small"
-                v-bind:class="{ liked: beach.isClicked }"
+                v-bind:class="{ liked: isLikedByUser(beach._id) }"
                 @change="reload()"
               >
                 <font-awesome-icon icon="heart" @click="upvote(beach._id)" />
@@ -51,33 +51,35 @@
 <script>
 import { bus } from "../main";
 import axios from "axios";
+import auth from "../auth/index";
 export default {
   name: "BeachesContainer",
   data() {
     return {
       beaches: [],
       isModalActive: false,
+      authToken: "",
+      renderComponent: true,
     };
   },
   methods: {
     upvote(beachId) {
-      axios.get("http://localhost:3000/beaches/" + beachId).then((response) => {
-        let likes = response.data.likes;
-        likes++;
-        console.log(response.data);
-        this.$forceUpdate();
-
+      //console.log(auth.user.userObject.liked.includes(beachId))
+      //console.log(auth.user.userObject.liked)
+      let found = auth.user.userObject.liked.includes(
+        (beach) => beach._id == beachId
+      );
+      let beach = this.beaches.beaches.find((beach) => beach._id == beachId);
+      console.log(found);
+      console.log(beach);
+      if (found) {
         axios
-          .patch(
-            `http://localhost:3000/beaches/` + beachId,
-            [
-              { propName: "likes", value: likes },
-              { propName: "isClicked", value: !response.data.isClicked },
-            ],
+          .put(
+            `http://localhost:3000/users/removeLiked`,
+            { beachId: beachId, userId: auth.user.userObject._id },
             {
               headers: {
-                Authorization:
-                  "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1lcmkubG92cmljQG1haWwuY29tIiwidXNlcklkIjoiNWY0YWM0MWU2NzI3N2YzMzQwM2JmODY1IiwiaWF0IjoxNTk4ODAwOTY0LCJleHAiOjE1OTg4MDQ1NjR9.RSVAT8-XLLpXLKP02WzfCGqYTVa6pt2HVCUmRmKCAfg",
+                Authorization: this.authToken,
               },
             }
           )
@@ -86,9 +88,55 @@ export default {
           })
           .catch((error) => {
             console.log(error);
-            this.isModalActive = true;
           });
-      });
+        axios
+          .patch(
+            "http://localhost:3000/beaches/" + beachId,
+            [{ propName: "likes", value: beach.likes - 1 }],
+            {
+              headers: {
+                Authorization: this.authToken,
+              },
+            }
+          )
+          .then(console.log("After patch unlike:" + beach.likes))
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        axios
+          .put(
+            `http://localhost:3000/users/addLiked`,
+            { beachId: beachId, userId: auth.user.userObject._id },
+            {
+              headers: {
+                Authorization: this.authToken,
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response);
+            this.forceRerender();
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+
+        axios
+          .patch(
+            "http://localhost:3000/beaches/" + beachId,
+            [{ propName: "likes", value: beach.likes + 1 }],
+            {
+              headers: {
+                Authorization: this.authToken,
+              },
+            }
+          )
+          .then(console.log("After patch like:" + beach.likes))
+          .catch((error) => {
+            console.log(error);
+          });
+      }
     },
     exitModal() {
       this.isModalActive = false;
@@ -100,14 +148,36 @@ export default {
     getImage() {
       return "http://localhost:3000/";
     },
+
+    isLikedByUser(clickedBeachId) {
+      if (auth.user.userObject.liked.length == 0) {
+        return false;
+      }
+      if (
+        auth.user.userObject.liked.find((beach) => beach._id == clickedBeachId)
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    forceRerender() {
+      // remove the my-component component from the DOM
+      this.renderComponent = false;
+
+      this.$nextTick(() => {
+        // add my-component component in DOM
+        this.renderComponent = true;
+      });
+    },
   },
   mounted() {
     var self = this;
+    self.authToken = auth.getAuthHeader();
     axios
       .get("http://localhost:3000/beaches")
       .then((response) => {
         self.beaches = JSON.parse(JSON.stringify(response.data));
-        console.log(self.beaches);
       })
       .catch((error) => {
         console.log(error);
@@ -142,6 +212,7 @@ export default {
 }
 .icon:hover {
   color: red;
+  transform: scale(1.2);
 }
 .icon.liked {
   color: red;

@@ -7,7 +7,7 @@
     </div>
   </section>
   <router-view />
-  <BeachesContainer />
+  <BeachesContainer :creds="creds" />
   <body>
     <section class="section">
       <div class="container">
@@ -16,8 +16,10 @@
           A simple container to divide your page into
           <strong>sections</strong>, like the one you're currently reading
         </h2>
-        <div class="container" v-for="(post,index) in posts.posts" :key="index">
-          <SinglePost :post="post" />
+        <div class="posts">
+          <div class="container" v-for="(post,index) in reversedPosts" :key="index">
+            <SinglePost :post="post" />
+          </div>
         </div>
       </div>
     </section>
@@ -40,21 +42,23 @@ export default {
     SinglePost,
     Navigation,
   },
+  props: {
+    creds: Object,
+  },
   data() {
     return {
       posts: [],
+      reversedPosts: [],
     };
   },
-  methods: {
-    
-  },
+  methods: {},
   mounted() {
     var self = this;
     axios
       .get("http://localhost:3000/posts")
       .then((response) => {
         self.posts = JSON.parse(JSON.stringify(response.data));
-        console.log(self.posts);
+        self.reversedPosts = self.posts.posts.reverse();
       })
       .catch((error) => {
         console.log(error);
@@ -62,3 +66,9 @@ export default {
   },
 };
 </script>
+<style scoped>
+.posts {
+  height: 45vh;
+  overflow-y: scroll;
+}
+</style>

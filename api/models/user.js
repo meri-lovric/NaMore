@@ -10,5 +10,6 @@ const userSchema = mongoose.Schema({
   //searching and indexing
   password: {type: String, required:true},
   userImage: { type: String, required: true },
+  liked:[{type: mongoose.Schema.Types.ObjectId, ref: "Beach" , required: true}]
  });
 module.exports = mongoose.model("User", userSchema);

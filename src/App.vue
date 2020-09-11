@@ -8,7 +8,10 @@
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css" />
     </head>
     <body>
-      <router-view/>
+      <router-view />
+      <div v-show="signIn" class="logout-icon" @click="logout">
+        <font-awesome-icon icon="sign-out-alt" />
+      </div>
       <Footer />
     </body>
   </html>
@@ -17,13 +20,30 @@
 
 <script>
 import Footer from "./components/Footer.vue";
-
-
-
+import auth from "./auth/index"
 export default {
   name: "App",
+  data() {
+    return {};
+  },
   components: {
     Footer,
+  },
+  methods: {
+    logout() {
+      localStorage.removeItem("token");
+      auth.user.authenticated = false;
+      this.$router.push('/')
+    },
+  },
+  computed: {
+    signIn() {
+      if (this.$route.path == "/" || this.$route.path == "/signup") {
+        return false;
+      } else {
+        return true;
+      }
+    },
   },
 };
 </script>
@@ -36,5 +56,9 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+.logout-icon {
+  cursor: pointer;
+  font-size: xx-large;
 }
 </style>

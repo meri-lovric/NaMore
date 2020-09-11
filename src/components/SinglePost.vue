@@ -16,7 +16,7 @@
         <p class="description container">{{post.text}}</p>
       </div>
     </div>
-    <div class="media-right" :class="{hidden:!(post.id==4)}">
+    <div class="media-right" :class="{hidden:!isLoggedUser}">
       <button @click="deleteStatus()" class="delete has-background-danger"></button>
     </div>
   </article>
@@ -24,20 +24,40 @@
 
 <script>
 import { posts } from "../posts.js";
+import auth from "../auth/index";
+import axios from "axios";
 export default {
   data() {
-    return { posts };
+    return { posts, isLoggedUser: false, authToken:"" };
   },
   props: {
     post: Object,
   },
   methods: {
     deleteStatus() {
-      this.posts.pop(this.post.userPost);
+      axios
+        .delete("http://localhost:3000/posts/" + this.post._id, {
+          headers: {
+            Authorization: this.authToken,
+          },
+        })
+        .then(console.log("Successfully deleted post"))
+        .catch((error) => {
+          console.log(error);
+        });
     },
     getImage() {
       return "http://localhost:3000/";
     },
+  },
+  mounted() {
+    this.authToken = auth.getAuthHeader();
+
+    if (this.post.user._id == auth.user.userObject._id) {
+      this.isLoggedUser = true;
+    } else {
+      this.isLoggedUser = false;
+    }
   },
 };
 </script>
@@ -56,7 +76,7 @@ export default {
 .media-content {
   display: flex;
   justify-content: center;
-  margin-top:2%;
+  margin-top: 2%;
 }
 .content {
   height: fit-content;
@@ -78,5 +98,8 @@ export default {
   height: 100%;
   width: 100%;
   object-fit: cover;
+}
+.delete:hover {
+  transform: scale(1.2);
 }
 </style>

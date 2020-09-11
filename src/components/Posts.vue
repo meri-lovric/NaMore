@@ -1,7 +1,7 @@
 <template>
   <section class="section">
     <div class="container">
-      <h1 class="title">Posts</h1>
+      <h1 class="title">Objave</h1>
       <h2 class="subtitle">
         <div class="field has-addons">
           <p class="control">
@@ -14,7 +14,7 @@
             />
           </p>
           <p class="control">
-            <button class="button" @click="searchPosts()">Search</button>
+            <button class="button" @click="searchPosts()">Pretraži</button>
           </p>
         </div>
       </h2>
@@ -23,7 +23,7 @@
           <SinglePost :post="post" :class="{ hidden: post.isHidden }" />
         </div>
         <strong>
-          <p>{{searchResult}}</p>
+          <p v-if="fetchedPosts == 0">Nema rezultata</p>
         </strong>
       </div>
     </div>
@@ -33,37 +33,37 @@
 <script>
 import SinglePost from "./SinglePost.vue";
 import axios from "axios";
-
+import auth from "../auth/index"
 export default {
-  props: {
-    userId: String,
-  },
   components: { SinglePost },
   data() {
     return {
-      searchResult: "",
       posts: [],
       requestFinished: false,
       childMessage: 0,
+      user:{},
+      fetchedPosts: 1
     };
   },
   computed: {
     userPosts: function () {
       console.log(this.posts);
-      return this.posts.posts.filter((post) => post.user._id == this.userId);
+      let posts = this.posts.posts.filter((post) => post.user._id == this.user._id);
+      return posts.reverse();
     },
   },
   methods: {
     searchPosts() {
+      this.fetchedPosts = 0;
       this.userPosts.forEach((post) => {
         if (!post.text.includes(this.$refs.postText.value)) {
           post.isHidden = true;
-          this.searchResult = "Nema rezultata";
         } else {
-          this.searchResult = "";
+          this.fetchedPosts++;
+          post.isHidden = false;
         }
       });
-      if (this.$refs.postText.value === "") {
+      if (!this.$refs.postText.value) {
         this.userPosts.forEach((post) => {
           post.isHidden = false;
         });
@@ -76,6 +76,7 @@ export default {
   },
   mounted() {
     var self = this;
+    self.user = auth.user.userObject;
     axios
       .get("http://localhost:3000/posts/")
       .then((response) => {
@@ -99,7 +100,7 @@ export default {
   display: none;
 }
 .column{
-  display:flex;
-  flex-direction: column-reverse;
-}
+  overflow-y: scroll;
+  height: 45vh;
+ }
 </style>

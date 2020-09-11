@@ -2,12 +2,13 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-
 const User = require("../models/user");
+const Beach = require("../models/beach");
 
 exports.users_get_all = (req, res, next) => {
   User.find()
-    .select("name username userImage _id")
+    .select("name username userImage email _id liked")
+    .populate("liked", "name beachImage _id")
     .exec()
     .then((docs) => {
       const response = {
@@ -15,9 +16,11 @@ exports.users_get_all = (req, res, next) => {
         users: docs.map((doc) => {
           return {
             name: doc.name,
-            usernmae: doc.username,
+            username: doc.username,
+            email: doc.email,
             _id: doc._id,
             userImage: doc.userImage,
+            liked: doc.liked,
             request: {
               type: "GET",
               url: "http://localhost:3000/users/" + doc._id,
@@ -63,6 +66,7 @@ exports.users_signup = (req, res, next) => {
               email: req.body.email,
               password: hash,
               userImage: req.file.path,
+              liked: [],
             });
             user
               .save()
@@ -81,7 +85,7 @@ exports.users_signup = (req, res, next) => {
                 });
               })
               .catch((err) => {
-                console.log(err);
+                console.log(err.message);
                 res.status(500).json({
                   error: err,
                 });
@@ -95,7 +99,8 @@ exports.users_signup = (req, res, next) => {
 exports.users_get_one = (req, res, next) => {
   const id = req.params.userId;
   User.findById(id)
-    .select("name username userImage _id")
+    .select("name username userImage _id liked")
+    .populate("liked", "name beachImage _id")
     .exec()
     .then((doc) => {
       console.log("From database " + doc);
@@ -140,6 +145,7 @@ exports.users_login = (req, res, next) => {
           return res.status(200).json({
             message: "Auth succesful",
             token: token,
+            email: user[0].email,
           });
         }
         res.status(401).json({
@@ -184,4 +190,93 @@ exports.users_edit_user = (req, res, next) => {
         error: err,
       });
     });
+};
+exports.users_addliked = (req, res, next) => {
+  User.findOne({ _id: req.body.userId }, function(err, user) {
+    user.liked.unshift(req.body.beachId);
+    user.save(function(err) {
+      console.log("Added beach");
+      console.log(user.liked.length);
+      if (err) {
+        console.log(err);
+      }
+    });
+  });
+  //const currentUser = User.findById(req.body.userId);
+  /* User.findOneAndUpdate(
+    { _id: req.body.userId },
+    { $push: { liked: req.body.beachObject } }
+  )
+    .exec()
+    .then(console.log('Updated'))
+    .catch((error) => console.log(error));
+*/
+  /*Promise.all([currentUser, currentBeach])
+    .then((result) => {
+      console.log(result[0].data, result[1].data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+    */
+  /*
+  
+  Promise.all([currentUser, currentBeach]).then((result) => {
+    console.log("Result: " +result);
+   // result[0].liked.unshift(result[1]);
+    console.log("Liked: "+ result[0].liked)
+    console.log("Length: " + result[0].liked.length)
+    User.updateOne({ _id: req.body.userId }, { $unshift: { liked: result[1] } }, function(
+      err,
+      result
+    ) {
+      if (err) {
+        res.send(err);
+      } else {
+        res.send(result);
+      }
+    });
+    */
+  // console.log("Length: " + currentUser.liked.length);
+};
+/*User.findById(req.body.userId)
+    .exec()
+    .then((user) => {
+      currentUser = user.user.data;
+      console.log(currentUser)
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  
+  Beach.findById(req.body.beachId)
+    .exec()
+    .then((beach) => {
+      console.log(currentUser, beach);
+      currentBeach = beach.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+    if(currentUser && currentBeach){
+      console.log("User:" + currentUser + "\n Beach: " +currentBeach)
+      //currentUser.likes.unshift(currentBeach);
+    } 
+    */
+exports.users_removeliked = (req, res, next) => {
+  User.findOne({ _id: req.body.userId }, function(err, user) {
+    console.log(user)
+    const index = user.liked.indexOf(req.body.beachId);
+    if(index > -1){
+      user.liked.splice(index,1);
+    }
+    console.log(user.liked);
+    user.save(function(err) {
+      console.log("Removed beach");
+      console.log(user.liked.length);
+      if (err) {
+        console.log(err);
+      }
+    });
+  });
 };

@@ -8,14 +8,14 @@
     </div>
     <div class="level-item has-text-centered" @click="changeTab(2)">
       <div>
-        <p class="heading">Prijatelji</p>
-        <p class="title">{{friendsNum}}</p>
+        <p class="heading">Plaže</p>
+        <p class="title">{{galleryNum}}</p>
       </div>
     </div>
     <div class="level-item has-text-centered" @click="changeTab(3)">
       <div>
-        <p class="heading">Plaže</p>
-        <p class="title">{{galleryNum}}</p>
+        <p class="heading">Omiljene</p>
+        <p class="title">{{likedNum}}</p>
       </div>
     </div>
   </nav>
@@ -29,17 +29,16 @@ export default {
     return { posts, users, beaches, beachesNumber: 0 };
   },
   props: {
-    userId: String,
     galleryNum: Number,
-    friendsNum: Number,
-    statusNum: Number
+    likedNum: Number,
+    statusNum: Number,
   },
   computed: {
     postsNumber: function () {
       let userPosts = this.posts.filter((post) => post.id === this.userId);
       return userPosts.length;
     },
-    friendsNumber: function () {
+    likedNumber: function () {
       return this.users.length;
     },
   },

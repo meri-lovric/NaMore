@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
+ 
+const checkAuth = require("../middleware/check-auth");
 
 
 const storage = multer.diskStorage({
@@ -36,11 +38,16 @@ router.post(
   UsersController.users_signup
 );
 
-router.get("/:userId", UsersController.users_get_one);
+router.get("/:userId", checkAuth, UsersController.users_get_one);
 
 router.post("/login", UsersController.users_login);
 
 router.delete("/:userId", UsersController.users_delete_user); // odluci naknadno ima li smisla ovime se bavit jer triba onda i njegove plaze brisat
 
 router.patch("/:userId", UsersController.users_edit_user);
+
+router.put("/addLiked", checkAuth, UsersController.users_addliked);
+router.put("/removeLiked", checkAuth, UsersController.users_removeliked);
+
 module.exports = router;
+

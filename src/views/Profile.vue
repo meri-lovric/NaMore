@@ -37,9 +37,8 @@
             @{{user.username}}
           </h2>
           <ProfileInfo
-            :userId="user._id"
             :galleryNum="galleryNumfromChild"
-            :friendsNum="friendsNumfromChild"
+            :likedNum="likedNumfromChild"
             :statusNum="statusNumfromChild"
           />
 
@@ -50,7 +49,7 @@
             placeholder="Novi status ..."
             @keyup.enter="submitStatus()"
           />
-          <button class="button is-primary is-inverted is-outlined" @click="submitStatus()">Submit</button>
+          <button class="button is-primary is-inverted is-outlined" @click="submitStatus()">Pošalji</button>
         </div>
       </div>
 
@@ -72,72 +71,79 @@
       </div>
     </section>
     <div class :class="{hidden: !options.find(option => option.id === 1).isActive}">
-      <Posts :userId="user._id" @childToParent="onStatusChildMount" />
+      <Posts v-if="renderComponent" @childToParent="onStatusChildMount" />
     </div>
     <div :class="{hidden: !options.find(option => option.id === 2).isActive}">
-      <FriendsList @childToParent="onFriendsChildMount" />
-    </div>
-    <div :class="{hidden: !options.find(option => option.id === 3).isActive}">
       <Gallery @childToParent="onGalleryChildMount" />
     </div>
-    <div :class="{hidden: !options.find(option => option.id === 4).isActive}">Liked beaches</div>
+    <div :class="{hidden: !options.find(option => option.id === 3).isActive}">
+      <LikedBeaches @childToParent="onLikedChildMount" />
+    </div>
   </div>
 </template>
 
 <script>
 import ProfileInfo from "../components/ProfileInfo";
-import FriendsList from "../components/FriendsList";
 import Posts from "../components/Posts.vue";
 import Gallery from "../components/Gallery";
+import LikedBeaches from "../components/LikedBeaches"
 import Navigation from "../components/Navigation";
 import axios from "axios";
+import auth from "../auth/index";
 export default {
   components: {
     ProfileInfo,
-    FriendsList,
     Posts,
     Gallery,
+    LikedBeaches,
     Navigation,
   },
+
   data() {
     return {
       options: [
         {
           id: 1,
-          title: "Overview",
+          title: "Objave",
           isActive: true,
         },
         {
           id: 2,
-          title: "Friends",
-          isActive: false,
-        },
-        {
-          id: 3,
-          title: "Gallery",
+          title: "Plaže",
           isActive: false,
         },
 
         {
-          id: 4,
-          title: "Liked",
+          id: 3,
+          title: "Omiljene",
           isActive: false,
         },
       ],
-      user: {},
       // posts,
       isModalActive: false,
       galleryNumfromChild: 0,
-      friendsNumfromChild: 0,
+      likedNumfromChild: 0,
       statusNumfromChild: 0,
+      user: {},
+      authToken: "",
+      renderComponent: true,
     };
   },
   methods: {
+    forceRerender() {
+      // remove the my-component component from the DOM
+      this.renderComponent = false;
+
+      this.$nextTick(() => {
+        // add my-component component in DOM
+        this.renderComponent = true;
+      });
+    },
     onGalleryChildMount(value) {
       this.galleryNumfromChild = value;
     },
-    onFriendsChildMount(value) {
-      this.friendsNumfromChild = value;
+    onLikedChildMount(value) {
+      this.likedNumfromChild = value;
     },
     onStatusChildMount(value) {
       this.statusNumfromChild = value;
@@ -163,14 +169,14 @@ export default {
           },
           {
             headers: {
-              Authorization:
-                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1lcmkubG92cmljQG1haWwuY29tIiwidXNlcklkIjoiNWY0YWM0MWU2NzI3N2YzMzQwM2JmODY1IiwiaWF0IjoxNTk4ODI3NjkzLCJleHAiOjE1OTg4MzEyOTN9._Ij17kVJzqqG_BBNQ7EUm5sdt6AfYAi1LbOedLJlehE",
+              Authorization: this.authToken,
             },
           }
         )
         .then((response) => {
           this.$refs.statusText.value = "";
           console.log(response);
+          this.forceRerender();
         })
         .catch((error) => {
           if (!this.$refs.statusText.value) {
@@ -185,15 +191,8 @@ export default {
   },
   mounted() {
     var self = this;
-    axios
-      .get("http://localhost:3000/users/5f4ac41e67277f33403bf865")
-      .then((response) => {
-        self.user = JSON.parse(JSON.stringify(response.data));
-        console.log(self.user);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    this.authToken = auth.getAuthHeader();
+    self.user = auth.user.userObject;
   },
 };
 </script>
