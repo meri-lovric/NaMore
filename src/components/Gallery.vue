@@ -19,12 +19,7 @@
         </div>
       </h2>
       <div v-if="requestFinished" class="columns is-multiline">
-        <div
-          v-for="(beach, index) in filteredBeaches"
-          :key="index"
-          class="card column is-4"
-          :class="{ hidden: beach.isHidden }"
-        >
+        <div v-for="(beach, index) in filteredBeaches" :key="index" class="card column is-4">
           <div class="card-image">
             <figure class="image is-4by3">
               <img :src="getImage()+beach.beachImage" alt="Placeholder image" />
@@ -39,6 +34,9 @@
           </div>
         </div>
       </div>
+      <strong>
+        <p v-if="fetchedPosts == 0">Nema rezultata</p>
+      </strong>
     </div>
   </section>
 </template>
@@ -54,38 +52,32 @@ export default {
       requestFinished: false,
       childMessage: 0,
       fetchedPosts: 1,
+      filteredBeaches: [],
+      userBeaches: [],
     };
-  },
-  computed: {
-    filteredBeaches: function () {
-      return this.beaches.beaches.filter(
-        (beach) => beach.author._id == auth.user.userObject._id
-      );
-    },
   },
   methods: {
     search() {
       this.fetchedPosts = 0;
-      this.filteredBeaches.forEach((beach) => {
-        if (!beach.name.includes(this.$refs.beachText.value)) {
-          beach.isHidden = true;
-        } else {
-          this.fetchedPosts++;
-          beach.isHidden = false;
+      this.filteredBeaches = [];
+      for (let i = 0; i < this.userBeaches.length; i++) {
+        if (
+          this.userBeaches[i].name
+            .toLowerCase()
+            .includes(this.$refs.beachText.value.toLowerCase())
+        ) {
+          this.filteredBeaches.push(this.userBeaches[i]);
         }
-      });
+      }
+      this.fetchedPosts = this.filteredBeaches.length;
       if (!this.$refs.beachText.value) {
-        this.filteredBeaches.forEach((beach) => {
-          beach.isHidden = false;
-        });
+        this.filteredBeaches = this.userBeaches;
       }
     },
-
     getImage() {
       return "http://localhost:3000/";
     },
     emitToParent() {
-      this.childMessage = this.filteredBeaches.length;
       this.$emit("childToParent", this.childMessage);
     },
   },
@@ -95,8 +87,12 @@ export default {
       .get("http://localhost:3000/beaches/")
       .then((response) => {
         self.beaches = JSON.parse(JSON.stringify(response.data));
-        console.log(self.beaches);
         this.requestFinished = true;
+        self.userBeaches = self.beaches.beaches.filter(
+          (beach) => beach.author._id == auth.user.userObject._id
+        );
+        self.filteredBeaches = self.userBeaches;
+        self.childMessage = self.userBeaches.length;
         this.emitToParent();
       })
       .catch((error) => {
