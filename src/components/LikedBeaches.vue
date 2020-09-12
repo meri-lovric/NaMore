@@ -5,14 +5,20 @@
       <h2 class="subtitle">
         <div class="field has-addons">
           <p class="control">
-            <input class="input" type="text" placeholder="Pretraži omiljene plaže" />
+            <input
+              class="input"
+              @keyup="search()"
+              ref="beachText"
+              type="text"
+              placeholder="Pretraži omiljene plaže"
+            />
           </p>
           <p class="control">
-            <button class="button">Pretraži</button>
+            <button class="button" @click="search()">Pretraži</button>
           </p>
         </div>
       </h2>
-      <div v-if="requestFinished" class="columns is-multiline">
+      <div class="columns is-multiline">
         <div v-for="(beach, index) in filteredBeaches" :key="index" class="card column is-4">
           <div class="card-image">
             <figure class="image is-4by3">
@@ -28,44 +34,51 @@
           </div>
         </div>
       </div>
+      <strong>
+        <p v-if="fetchedPosts == 0">Nema rezultata</p>
+      </strong>
     </div>
   </section>
 </template>
 
 <script>
-import axios from "axios";
 import auth from "../auth/index";
 export default {
   data() {
-    return { beaches: [], requestFinished: false, childMessage: 0 };
-  },
-  computed: {
-    filteredBeaches: function () {
-      return auth.user.userObject.liked;
-    },
+    return { childMessage: 0, userBeaches: [], filteredBeaches: [], fetchedPosts:1 };
   },
   methods: {
+    search() {
+      this.fetchedPosts = 0;
+      this.filteredBeaches = [];
+      for (let i = 0; i < this.userBeaches.length; i++) {
+        if (
+          this.userBeaches[i].name
+            .toLowerCase()
+            .includes(this.$refs.beachText.value.toLowerCase())
+        ) {
+          this.filteredBeaches.push(this.userBeaches[i]);
+        }
+      }
+      this.fetchedPosts = this.filteredBeaches.length;
+      if (!this.$refs.beachText.value) {
+        this.filteredBeaches = this.userBeaches;
+      }
+    },
     getImage() {
       return "http://localhost:3000/";
     },
     emitToParent() {
-      this.childMessage = this.filteredBeaches.length;
       this.$emit("childToParent", this.childMessage);
     },
   },
   mounted() {
-    var self = this;
-    axios
-      .get("http://localhost:3000/beaches/")
-      .then((response) => {
-        self.beaches = JSON.parse(JSON.stringify(response.data));
-        console.log(self.beaches);
-        this.requestFinished = true;
-        this.emitToParent();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    this.userBeaches = auth.user.userObject.liked;
+    console.log(this.userBeaches);
+    this.filteredBeaches = this.userBeaches;
+    console.log(this.filteredBeaches);
+    this.childMessage = this.userBeaches.length;
+    this.emitToParent();
   },
 };
 </script>
