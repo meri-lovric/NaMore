@@ -4,7 +4,7 @@
       <div class="title">Sign up</div>
       <div class="subtitle">
         Već imate račun?
-        <router-link to="/signin">Ulogirajte se.</router-link>
+        <router-link to="/">Ulogirajte se.</router-link>
       </div>
       <div class="field">
         <p class="control has-icons-left has-icons-right">
@@ -44,11 +44,7 @@
           <form enctype="multipart/form-data">
             <div class="fields">
               <label>Učitajte sliku</label>
-              <br />
-              <input type="file" ref="file" @change="onSelect" />
-            </div>
-            <div class="fields">
-              <button>Submit</button>
+              <input type="file" id="file" ref="file" @change="onSelect()" />
             </div>
             <div class="message">
               <h5>{{message}}</h5>
@@ -79,11 +75,10 @@ export default {
   },
   methods: {
     onSelect() {
-      const file = this.$refs.file.files[0];
-      this.file = file;
+      this.file = this.$refs.file.files[0];
     },
     onSubmit() {
-      const formData = new FormData();
+      let formData = new FormData();
       formData.append("userImage", this.file);
       formData.append("name", this.name);
       formData.append("username", this.username);
@@ -95,11 +90,13 @@ export default {
         this.username,
         this.password,
         this.email,
+        this.file,
         formData
       );
       axios
         .post("http://localhost:3000/users/signup", formData)
         .then(() => {
+          console.log("Successfully created new user");
           this.$router.push("/");
         })
         .catch((err) => {

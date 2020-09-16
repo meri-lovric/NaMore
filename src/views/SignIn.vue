@@ -66,6 +66,7 @@ export default {
         })
         .catch(() => {
           console.log("Failed login");
+          window.alert("Failed login.");
         });
     },
   },

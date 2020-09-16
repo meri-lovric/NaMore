@@ -18,6 +18,7 @@ mongoose.connect(
 );
 mongoose.set("useCreateIndex", true); //to bypass deprication warning:
 // collection.ensureIndex is deprecated. Use createIndexes instead.
+mongoose.set('useFindAndModify', false);
 
 mongoose.Promise = global.Promise;
 

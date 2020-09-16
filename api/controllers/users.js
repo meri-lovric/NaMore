@@ -8,7 +8,7 @@ const Beach = require("../models/beach");
 exports.users_get_all = (req, res, next) => {
   User.find()
     .select("name username userImage email _id liked")
-    .populate("liked", "name beachImage _id")
+    .populate("liked", "name beachImage _id likes")
     .exec()
     .then((docs) => {
       const response = {
@@ -100,7 +100,7 @@ exports.users_get_one = (req, res, next) => {
   const id = req.params.userId;
   User.findById(id)
     .select("name username userImage _id liked")
-    .populate("liked", "name beachImage _id")
+    .populate("liked", "name beachImage _id likes")
     .exec()
     .then((doc) => {
       console.log("From database " + doc);
@@ -172,6 +172,26 @@ exports.users_delete_user = (req, res, next) => {
       res.status(500).json({ error: err });
     });
 };
+exports.users_edit_image = (req, res, next) => {
+  const id = req.params.userId;
+  console.log("Id: " + id);
+  console.log("In request " + req.file.path);
+  User.findOneAndUpdate(
+    { _id: id },
+    { $set: { userImage: req.file.path } },
+    { new: true }
+  )
+    .exec()
+    .then((result) => {
+      console.log(result);
+      res.status(200).json(result);
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
+    });
+};
 exports.users_edit_user = (req, res, next) => {
   const id = req.params.userId;
   const updateOps = {};
@@ -192,83 +212,27 @@ exports.users_edit_user = (req, res, next) => {
     });
 };
 exports.users_addliked = (req, res, next) => {
-  User.findOne({ _id: req.body.userId }, function(err, user) {
-    user.liked.unshift(req.body.beachId);
-    user.save(function(err) {
-      console.log("Added beach");
-      console.log(user.liked.length);
-      if (err) {
-        console.log(err);
-      }
-    });
-  });
-  //const currentUser = User.findById(req.body.userId);
-  /* User.findOneAndUpdate(
-    { _id: req.body.userId },
-    { $push: { liked: req.body.beachObject } }
-  )
-    .exec()
-    .then(console.log('Updated'))
-    .catch((error) => console.log(error));
-*/
-  /*Promise.all([currentUser, currentBeach])
-    .then((result) => {
-      console.log(result[0].data, result[1].data);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-    */
-  /*
-  
-  Promise.all([currentUser, currentBeach]).then((result) => {
-    console.log("Result: " +result);
-   // result[0].liked.unshift(result[1]);
-    console.log("Liked: "+ result[0].liked)
-    console.log("Length: " + result[0].liked.length)
-    User.updateOne({ _id: req.body.userId }, { $unshift: { liked: result[1] } }, function(
-      err,
-      result
-    ) {
-      if (err) {
-        res.send(err);
-      } else {
-        res.send(result);
-      }
-    });
-    */
-  // console.log("Length: " + currentUser.liked.length);
+  console.log(req.body.user.liked);
+  if (req.body.user.liked.filter((beach) => beach == req.body.beachId).length == 0) {
+    User.findOneAndUpdate(
+      { _id: req.body.user._id },
+      { $push: { liked: req.body.beachId } }
+    )
+      .exec()
+      .then(() => {
+        console.log("Updated");
+      })
+      .catch((error) => console.log(error));
+  } else {
+    console.log("Beach already liked.");
+  }
 };
-/*User.findById(req.body.userId)
-    .exec()
-    .then((user) => {
-      currentUser = user.user.data;
-      console.log(currentUser)
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-  
-  Beach.findById(req.body.beachId)
-    .exec()
-    .then((beach) => {
-      console.log(currentUser, beach);
-      currentBeach = beach.data;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-    if(currentUser && currentBeach){
-      console.log("User:" + currentUser + "\n Beach: " +currentBeach)
-      //currentUser.likes.unshift(currentBeach);
-    } 
-    */
 exports.users_removeliked = (req, res, next) => {
-  User.findOne({ _id: req.body.userId }, function(err, user) {
-    console.log(user)
+  User.findOne({ _id: req.body.user._id }, function(err, user) {
+    console.log("User to remove liked: " + user.name);
     const index = user.liked.indexOf(req.body.beachId);
-    if(index > -1){
-      user.liked.splice(index,1);
+    if (index > -1) {
+      user.liked.splice(index, 1);
     }
     console.log(user.liked);
     user.save(function(err) {

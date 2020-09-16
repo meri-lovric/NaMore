@@ -18,6 +18,7 @@ exports.beaches_get_all = (req, res, next) => {
             isClicked: doc.isClicked,
             likes: doc.likes,
             options: doc.options,
+            comments: doc.comments,
             _id: doc._id,
             request: {
               type: "GET",
@@ -26,7 +27,6 @@ exports.beaches_get_all = (req, res, next) => {
           };
         }),
       };
-      console.log(response);
 
       if (docs.length >= 0) {
         res.status(200).json(response);
@@ -65,8 +65,9 @@ exports.beaches_create_beach = (req, res, next) => {
           kids: req.body.options.kids,
           pets: req.body.options.pets,
           parking: req.body.options.parking,
-          food: req.body.options.food
+          food: req.body.options.food,
         },
+        comments: [],
       });
       return beach.save();
     })
@@ -79,6 +80,7 @@ exports.beaches_create_beach = (req, res, next) => {
           description: result.description,
           author: result.author,
           options: result.options,
+          comments: result.comments,
           request: {
             type: "GET",
             url: "http://localhost:3000/beaches/" + result._id,
@@ -99,6 +101,7 @@ exports.beaches_get_one = (req, res, next) => {
   const id = req.params.beachId;
   Beach.findById(id)
     .populate("author", "name username")
+    .populate("comments", "user text time")
     .exec()
     .then((doc) => {
       console.log("From database: " + doc);

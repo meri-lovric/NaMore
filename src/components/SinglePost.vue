@@ -1,5 +1,5 @@
 <template>
-  <article class="media">
+  <article :class="{'hidden':isDeleted}" class="media">
     <figure class="media-left">
       <p class="image is-128x128">
         <img class="image" :src="getImage() + post.user.userImage" />
@@ -28,23 +28,29 @@ import auth from "../auth/index";
 import axios from "axios";
 export default {
   data() {
-    return { posts, isLoggedUser: false, authToken:"" };
+    return { posts, isLoggedUser: false, authToken: "", isDeleted: false };
   },
   props: {
     post: Object,
   },
   methods: {
     deleteStatus() {
-      axios
-        .delete("http://localhost:3000/posts/" + this.post._id, {
-          headers: {
-            Authorization: this.authToken,
-          },
-        })
-        .then(console.log("Successfully deleted post"))
-        .catch((error) => {
-          console.log(error);
-        });
+      let confirmation = window.confirm("Izbrisati objavu?");
+      if (confirmation) {
+        axios
+          .delete("http://localhost:3000/posts/" + this.post._id, {
+            headers: {
+              Authorization: this.authToken,
+            },
+          })
+          .then(() => {
+            console.log("Successfully deleted post");
+            this.isDeleted = true;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
     },
     getImage() {
       return "http://localhost:3000/";
@@ -101,5 +107,8 @@ export default {
 }
 .delete:hover {
   transform: scale(1.2);
+}
+.hidden{
+  display:none;
 }
 </style>

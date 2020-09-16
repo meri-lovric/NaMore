@@ -21,13 +21,66 @@
         </div>
         <button class="modal-close is-large" aria-label="close"></button>
       </div>
+
+      <div class="modal" :class="{'is-active': isModalEditActive}">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+          <div class="notification is-primary is-inverted">
+            <button class="delete" @click="exitModal()"></button>
+            Učitajte novu sliku profila
+            <input
+              type="file"
+              id="file"
+              ref="file"
+              @change="editImage()"
+            />
+            <button class="button is-primary is-inverted" @click="submitNewImage()">Učitaj sliku</button>
+            <div class="container">
+              <div class="field">
+                <label class="label">Ime</label>
+                <div class="control">
+                  <input class="input" ref="name" type="text" placeholder="Novo ime" />
+                  <button class="button is-primary is-inverted" @click="editInfoName()">
+                    <font-awesome-icon icon="check" />
+                  </button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="label">Korisničko ime</label>
+                <div class="control">
+                  <input class="input" ref="username" type="text" placeholder="Novo korisničko ime" />
+                  <button class="button is-primary is-inverted" @click="editInfoUsername()">
+                    <font-awesome-icon icon="check" />
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Delete user</label>
+              <div class="control">
+                <button class="button is-danger" @click="deleteUser()">
+                  <font-awesome-icon icon="user-slash" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="modal-close is-large" aria-label="close"></button>
+      </div>
       <!-- Hero content: will be in the middle -->
       <div class="hero-body">
         <div class="container has-text-centered">
           <h1 class="title">
             <div class="image-shadow-wrapper">
-              <div class="image-shadow">
-                <img :src="getImage()+user.userImage" />
+              <div>
+                <font-awesome-icon
+                  class="is-pulled-right icon"
+                  icon="edit"
+                  @click="isModalEditActive=true"
+                />
+                <div class="image-shadow">
+                  <img :src="getImage()+user.userImage" />
+                </div>
               </div>
             </div>
           </h1>
@@ -37,6 +90,7 @@
             @{{user.username}}
           </h2>
           <ProfileInfo
+            @childToParent="onChangeTabMount"
             :galleryNum="galleryNumfromChild"
             :likedNum="likedNumfromChild"
             :statusNum="statusNumfromChild"
@@ -86,7 +140,7 @@
 import ProfileInfo from "../components/ProfileInfo";
 import Posts from "../components/Posts.vue";
 import Gallery from "../components/Gallery";
-import LikedBeaches from "../components/LikedBeaches"
+import LikedBeaches from "../components/LikedBeaches";
 import Navigation from "../components/Navigation";
 import axios from "axios";
 import auth from "../auth/index";
@@ -121,15 +175,36 @@ export default {
       ],
       // posts,
       isModalActive: false,
+      isModalEditActive: false,
       galleryNumfromChild: 0,
       likedNumfromChild: 0,
       statusNumfromChild: 0,
       user: {},
       authToken: "",
       renderComponent: true,
+      file: "",
     };
   },
   methods: {
+    deleteUser() {
+      if (window.confirm("Želite li sigurno izbrisati korisnički račun?")) {
+        axios
+          .delete("http://localhost:3000/users/" + auth.user.userObject._id, {
+            headers: {
+              Authorization: this.authToken,
+            },
+          })
+          .then(() => {
+            console.log("Successfully deleted user");
+            this.$router.push("/");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        console.log("Action cancelled by user");
+      }
+    },
     forceRerender() {
       // remove the my-component component from the DOM
       this.renderComponent = false;
@@ -147,6 +222,9 @@ export default {
     },
     onStatusChildMount(value) {
       this.statusNumfromChild = value;
+    },
+    onChangeTabMount(value) {
+      this.changeTab(value);
     },
     getImage() {
       return "http://localhost:3000/";
@@ -187,6 +265,78 @@ export default {
     },
     exitModal() {
       this.isModalActive = false;
+      this.isModalEditActive = false;
+    },
+    editImage() {
+      this.file = this.$refs.file.files[0];
+    },
+    submitNewImage() {
+      let formData = new FormData();
+      formData.append("userImage", this.file);
+      console.log(auth.user.userObject.userImage);
+
+      axios
+        .patch(
+          "http://localhost:3000/users/" +
+            auth.user.userObject._id +
+            "/userImage",
+          formData,
+          {
+            headers: {
+              Authorization: this.authToken,
+            },
+          }
+        )
+        .then((response) => {
+          console.log("Successfully changed image");
+          console.log(auth.user.userObject.userImage);
+          auth.user.userObject.userImage = response.data.userImage;
+          this.isModalEditActive = false;
+          this.forceRerender();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    editInfoName() {
+      axios
+        .patch(
+          "http://localhost:3000/users/" + auth.user.userObject._id,
+          [{ propName: "name", value: this.$refs.name.value }],
+          {
+            headers: {
+              Authorization: this.authToken,
+            },
+          }
+        )
+        .then(() => {
+          auth.user.userObject.name = this.$refs.name.value;
+          console.log("After patch unlike:" + auth.user.userObject.name);
+          this.isModalEditActive = false;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    editInfoUsername() {
+      axios
+        .patch(
+          "http://localhost:3000/users/" + auth.user.userObject._id,
+          [{ propName: "username", value: this.$refs.username.value }],
+          {
+            headers: {
+              Authorization: this.authToken,
+            },
+          }
+        )
+        .then(() => {
+          auth.user.userObject.username = this.$refs.username.value;
+          console.log("After patch unlike:" + auth.user.userObject.username);
+          this.isModalEditActive = false;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
   mounted() {
@@ -218,7 +368,9 @@ export default {
   width: 100%;
   object-fit: cover;
 }
-
+h2 {
+  margin-top: 0.75rem !important;
+}
 .image-shadow-wrapper {
   width: 300px;
   height: 300px;
@@ -254,5 +406,11 @@ export default {
 .image-shadow:hover::after {
   opacity: 1;
   filter: blur(15px);
+}
+.icon {
+  position: relative;
+  z-index: 1;
+  bottom: -15px;
+  cursor: pointer;
 }
 </style>

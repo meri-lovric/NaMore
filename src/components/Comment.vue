@@ -1,43 +1,38 @@
 <template>
-  <article class="media">
+  <article :class="{hidden:deletedComment}" class="media">
     <figure class="media-left">
-      <p class="image is-rounded is-128x128">
-        <img :src="comment.photo" />
+      <p class="image is-128x128">
+        <img class="image" :src="getImage() + comment.userImage" />
+      </p>
+      <p class="username">
+        <strong>{{comment.name}}</strong>
+        <small>@{{comment.username}}</small>
+        <small>{{comment.time}}</small>
+        <br />
       </p>
     </figure>
     <div class="media-content">
       <div class="content">
-        <p>
-          <strong>{{comment.username}}</strong>
-          <small>@{{comment.username}}</small>
-          <br />
-          {{comment.commentBody}}
-        </p>
+        <p class="description container">{{comment.text}}</p>
       </div>
     </div>
-    <div class="media-right">
-      <button
-        @click="deleteComment()"
-        class="delete has-background-danger"
-        :class="{'hidden' : !isActiveUser}"
-      ></button>
-      <small>31m</small>
+    <div class="media-right" :class="{hidden:!isActiveUser}">
+      <button @click="deleteComment()" class="delete has-background-danger"></button>
     </div>
   </article>
 </template>
 <script>
-import { beaches } from "../seed.js";
-import { user } from "../user.js";
+import auth from "../auth/index";
 export default {
   data() {
-    return { beaches, user };
+    return { deletedComment: false };
   },
   props: {
     comment: Object,
   },
   computed: {
     isActiveUser: function () {
-      if (this.comment.username === user.username) {
+      if (this.comment.username === auth.user.userObject.username) {
         return true;
       }
       return false;
@@ -45,29 +40,55 @@ export default {
   },
   methods: {
     deleteComment() {
-      let currentCard = this.beaches.find((card) =>
-        card.comments.includes(this.comment)
-      );
-      currentCard.comments.pop(this.comment);
+      this.deletedComment = true;
+      this.$emit("childToParent", this.comment._id);
+    },
+    getImage() {
+      return "http://localhost:3000/";
     },
   },
 };
 </script>
 <style scoped>
-.media img {
+.media {
+  margin-bottom: 2.5rem;
+  padding: 0.75rem;
+  border: #eaeef3 1px solid;
+}
+.media-left {
+  display: flex;
+}
+.media-left p {
+  margin: 2%;
+}
+.media-content {
+  display: flex;
+  justify-content: center;
+  margin-top: 2%;
+}
+.content {
+  height: fit-content;
+}
+.username {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: fit-content;
+  border-right: 1px grey solid;
+}
+.description {
+  word-break: break-all;
+}
+.hidden {
+  display: none;
+}
+.image img {
   height: 100%;
   width: 100%;
   object-fit: cover;
 }
-.content {
-  position: relative;
-  top: 1.75rem;
-}
-.media-right {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  height: 7rem;
+.delete:hover {
+  transform: scale(1.2);
 }
 .hidden {
   display: none;

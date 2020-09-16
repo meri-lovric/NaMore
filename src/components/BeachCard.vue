@@ -9,15 +9,17 @@
         </div>
       </div>
     </div>
-    <BeachCommentsModal :beachId="beach.id" :isModalActive="isModalActive" />
-    <div class="tile is-parent">
-      <article class="tile is-child notification is-info">
-        <p class="title">{{beach.name}}</p>
-        <figure class="image is-4by3">
-          <img :src="getImage()+beach.beachImage" />
-        </figure>
-      </article>
-    </div>
+    <router-link  class="tile is-parent" :to="{ name: 'BeachPage', params: {beach: beach } }">
+      <div class="tile is-parent">
+        <article class="tile is-child notification is-info">
+          <p class="title">{{beach.name}}</p>
+          <figure class="image is-4by3">
+            <img :src="getImage()+beach.beachImage" />
+          </figure>
+        </article>
+      </div>
+    </router-link>
+
     <div class="tile is-parent">
       <article class="tile is-child notification">
         <p class="subtitle"></p>
@@ -30,13 +32,12 @@
                 <p class="title">{{beach.likes}}</p>
               </div>
             </div>
-            <!-- <div class="level-item has-text-centered" @click="activateModal()">
+            <div class="level-item has-text-centered">
               <div class="comments">
                 <p class="heading">Komentari</p>
-                <p class="title">{{beachCommentsNumber}}</p>
+                <p class="title">{{beach.comments.length}}</p>
               </div>
-             
-            </div> !-->
+            </div>
           </nav>
           <nav class="level is-mobile">
             <div class="level-item has-text-centered">
@@ -119,7 +120,7 @@
           <article v-if="canActivate()" class="media">
             <figure class="media-left">
               <p class="image is-64x64">
-                <!-- <img :src="getImage()+beach.user.userImage" /> !-->
+                <img :src="getImage()+ userImage" />
               </p>
             </figure>
             <div class="media-content">
@@ -128,7 +129,7 @@
                   <textarea
                     class="textarea"
                     ref="commentText"
-                    @keyup.enter="submitComment()"
+                    @keyup.enter="submitComment(beach)"
                     placeholder="Dodajte komentar..."
                   ></textarea>
                 </p>
@@ -136,7 +137,7 @@
               <nav class="level">
                 <div class="level-left">
                   <div class="level-item">
-                    <a class="button is-info" @click="submitComment()">Submit</a>
+                    <a class="button is-info" @click="submitComment(beach)">Submit</a>
                   </div>
                 </div>
               </nav>
@@ -148,11 +149,11 @@
   </div>
 </template>
 <script>
-import BeachCommentsModal from "../components/BeachCommentsModal";
 import { beaches } from "../seed.js";
 import { user } from "../user.js";
 import auth from "../auth/index";
-
+import axios from "axios";
+import mongoose from "mongoose";
 export default {
   data() {
     return {
@@ -161,13 +162,11 @@ export default {
       isCommentModalActive: false,
       user,
       hover: false,
+      authToken: "",
     };
   },
   props: {
     beach: Object,
-  },
-  components: {
-    BeachCommentsModal,
   },
   methods: {
     activateModal() {
@@ -176,20 +175,39 @@ export default {
     getImage() {
       return "http://localhost:3000/";
     },
-    submitComment() {
-      let newComment = {
-        username: this.user.username,
-        commentBody: this.$refs.commentText.value,
-        photo: this.user.photo,
-      };
-      if (this.$refs.commentText.value) {
-        this.beaches
-          .find((beach) => beach.id === this.beach.id)
-          .comments.push(newComment);
-        this.$refs.commentText.value = "";
-      } else {
+    submitComment(beach) {
+      let comments = beach.comments;
+      if (this.$refs.commentText.value == "") {
         this.isCommentModalActive = true;
+        return;
       }
+      let newComment = {
+        _id: new mongoose.Types.ObjectId(),
+        username: auth.user.userObject.username,
+        name: auth.user.userObject.name,
+        userImage: auth.user.userObject.userImage,
+        text: this.$refs.commentText.value,
+      };
+
+      comments.unshift(newComment);
+
+      axios
+        .patch(
+          `http://localhost:3000/beaches/` + beach._id,
+          [{ propName: "comments", value: comments }],
+          {
+            headers: {
+              Authorization: this.authToken,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response);
+          this.$refs.commentText.value = "";
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     exitCommentModal() {
       this.isCommentModalActive = false;
@@ -200,6 +218,9 @@ export default {
     },
   },
   computed: {
+    userImage: function () {
+      return auth.user.userObject.userImage;
+    },
     beachCommentsNumber: function () {
       let beachComments = this.beaches.filter(
         (beach) => beach.id === this.beach.id
@@ -207,9 +228,10 @@ export default {
       return beachComments[0].comments.length;
     },
   },
-  mounted(){
-    console.log(this.beach.options.kids)
-  }
+  mounted() {
+    console.log(this.beach.options.kids);
+    this.authToken = auth.getAuthHeader();
+  },
 };
 </script>
 <style scoped>
@@ -223,9 +245,6 @@ export default {
   margin-top: 0.75rem;
   margin-bottom: 0.75rem;
 }
-.comments {
-  cursor: pointer;
-}
 span {
   font-size: x-small;
 }
@@ -233,5 +252,9 @@ span {
   height: 100%;
   width: 100%;
   object-fit: cover;
+}
+router-link {
+  cursor: pointer;
+  text-decoration: none;
 }
 </style>

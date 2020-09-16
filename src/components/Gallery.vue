@@ -10,7 +10,7 @@
               @keyup="search()"
               ref="beachText"
               type="text"
-              placeholder="Pretraži omiljene plaže"
+              placeholder="Pretraži dodane plaže"
             />
           </p>
           <p class="control">
@@ -21,6 +21,11 @@
       <div v-if="requestFinished" class="columns is-multiline">
         <div v-for="(beach, index) in filteredBeaches" :key="index" class="card column is-4">
           <div class="card-image">
+            <button
+              @click="deleteBeach(beach._id)"
+              class="is-pulled-right delete has-background-danger"
+            ></button>
+
             <figure class="image is-4by3">
               <img :src="getImage()+beach.beachImage" alt="Placeholder image" />
             </figure>
@@ -54,6 +59,7 @@ export default {
       fetchedPosts: 1,
       filteredBeaches: [],
       userBeaches: [],
+      authToken: "",
     };
   },
   methods: {
@@ -80,20 +86,42 @@ export default {
     emitToParent() {
       this.$emit("childToParent", this.childMessage);
     },
+    deleteBeach(beachId) {
+      const index = this.filteredBeaches.findIndex((el) => el._id == beachId);
+      if (index > -1) {
+        this.filteredBeaches.splice(index, 1);
+      }
+      axios
+        .delete("http://localhost:3000/beaches/" + beachId, {
+          headers: {
+            Authorization: this.authToken,
+          },
+        })
+        .then(() => {
+          console.log("Successfully deleted beach");
+          this.childMessage = this.userBeaches.length;
+          this.emitToParent();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
   },
   mounted() {
     var self = this;
+    this.authToken = auth.getAuthHeader();
+
     axios
       .get("http://localhost:3000/beaches/")
       .then((response) => {
         self.beaches = JSON.parse(JSON.stringify(response.data));
-        this.requestFinished = true;
+        self.requestFinished = true;
         self.userBeaches = self.beaches.beaches.filter(
           (beach) => beach.author._id == auth.user.userObject._id
         );
         self.filteredBeaches = self.userBeaches;
         self.childMessage = self.userBeaches.length;
-        this.emitToParent();
+        self.emitToParent();
       })
       .catch((error) => {
         console.log(error);
@@ -113,5 +141,11 @@ export default {
 }
 .hidden {
   display: none;
+}
+div.card-image > button {
+  z-index: 1;
+}
+div.card-image > button:hover {
+  transform: scale(1.2);
 }
 </style>

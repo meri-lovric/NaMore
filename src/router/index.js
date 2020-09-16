@@ -6,6 +6,7 @@ import Beach from "../views/Beach.vue";
 import NewBeachForm from "../views/NewBeachForm.vue";
 import SignIn from "../views/SignIn.vue";
 import SignUp from "../views/SignUp.vue";
+import BeachPage from "../views/BeachPage.vue";
 Vue.use(VueRouter);
 
 const routes = [
@@ -34,6 +35,13 @@ const routes = [
     name: "Beaches",
     component: Beach,
   },
+  {
+    path: "/beachPage",
+    name: "BeachPage",
+    component: BeachPage,
+    props: true,
+  },
+
   {
     path: "/newbeachform",
     name: "NewBeach",

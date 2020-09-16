@@ -1,18 +1,18 @@
 <template>
   <nav class="level is-mobile">
-    <div class="level-item has-text-centered" @click="changeTab(1)">
+    <div class="level-item has-text-centered" @click="changeChildMessage(1)">
       <div>
         <p class="heading">Statusi</p>
         <p class="title">{{statusNum}}</p>
       </div>
     </div>
-    <div class="level-item has-text-centered" @click="changeTab(2)">
+    <div class="level-item has-text-centered" @click="changeChildMessage(2)">
       <div>
         <p class="heading">Plaže</p>
         <p class="title">{{galleryNum}}</p>
       </div>
     </div>
-    <div class="level-item has-text-centered" @click="changeTab(3)">
+    <div class="level-item has-text-centered" @click="changeChildMessage(3)">
       <div>
         <p class="heading">Omiljene</p>
         <p class="title">{{likedNum}}</p>
@@ -40,6 +40,11 @@ export default {
     },
     likedNumber: function () {
       return this.users.length;
+    },
+  },
+  methods: {
+    changeChildMessage(number) {
+      this.$emit("childToParent", number);
     },
   },
 };

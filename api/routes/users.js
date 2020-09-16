@@ -45,7 +45,7 @@ router.post("/login", UsersController.users_login);
 router.delete("/:userId", UsersController.users_delete_user); // odluci naknadno ima li smisla ovime se bavit jer triba onda i njegove plaze brisat
 
 router.patch("/:userId", UsersController.users_edit_user);
-
+router.patch("/:userId/userImage",checkAuth, upload.single("userImage"), UsersController.users_edit_image);
 router.put("/addLiked", checkAuth, UsersController.users_addliked);
 router.put("/removeLiked", checkAuth, UsersController.users_removeliked);
 

@@ -28,7 +28,15 @@
           <div class="card-content">
             <div class="media">
               <div class="media-content">
-                <p class="title is-4">{{ beach.name }}</p>
+                <p class="title is-4">
+                  {{ beach.name }}
+                  <span
+                    class="icon is-small has-text-danger"
+                    @click="upvote(beach)"
+                  >
+                    <font-awesome-icon icon="heart" />
+                  </span>
+                </p>
               </div>
             </div>
           </div>
@@ -43,11 +51,60 @@
 
 <script>
 import auth from "../auth/index";
+import axios from "axios";
 export default {
   data() {
-    return { childMessage: 0, userBeaches: [], filteredBeaches: [], fetchedPosts:1 };
+    return {
+      childMessage: 0,
+      userBeaches: [],
+      filteredBeaches: [],
+      fetchedPosts: 1,
+      authToken: "",
+    };
   },
   methods: {
+    upvote(beach) {
+      // console.log("Is beach found:" + found.name);
+
+      let liked = auth.user.userObject.liked;
+      const index = liked.findIndex((el) => el._id == beach._id);
+      if (index > -1) {
+        liked.splice(index, 1);
+      }
+      axios
+        .patch(
+          `http://localhost:3000/users/` + auth.user.userObject._id,
+          [{ propName: "liked", value: liked }],
+          {
+            headers: {
+              Authorization: this.authToken,
+            },
+          }
+        )
+        .then((response) => {
+          auth.user.userObject.liked = liked;
+          axios
+            .patch(
+              "http://localhost:3000/beaches/" + beach._id,
+              [{ propName: "likes", value: beach.likes - 1 }],
+              {
+                headers: {
+                  Authorization: this.authToken,
+                },
+              }
+            )
+            .then(() => {
+              this.childMessage--;
+              this.emitToParent();
+              beach.likes--;
+              console.log("After patch like:" + beach.likes);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          console.log(response);
+        });
+    },
     search() {
       this.fetchedPosts = 0;
       this.filteredBeaches = [];
@@ -74,9 +131,8 @@ export default {
   },
   mounted() {
     this.userBeaches = auth.user.userObject.liked;
-    console.log(this.userBeaches);
+    this.authToken = auth.getAuthHeader();
     this.filteredBeaches = this.userBeaches;
-    console.log(this.filteredBeaches);
     this.childMessage = this.userBeaches.length;
     this.emitToParent();
   },
@@ -91,5 +147,14 @@ export default {
   height: 100%;
   width: 100%;
   object-fit: cover;
+}
+.icon {
+  z-index: 1;
+  cursor: pointer;
+  width: -webkit-fill-available;
+  margin-top: 1.5%;
+}
+.icon:hover {
+  transform: scale(1.2);
 }
 </style>

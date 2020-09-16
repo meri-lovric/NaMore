@@ -1,24 +1,5 @@
 <template>
   <div>
-    <div class="tile is-ancestor">
-      <div class="modal" :class="{'is-active': isModalActive}">
-        <div class="modal-background"></div>
-        <div class="modal-content">
-          <div class="notification is-danger">
-            <button class="delete" @click="exitModal()"></button>
-            Nedozvoljena radnja. Ulogirajte se ili napravite profil.
-            <div>
-              <button class="button is-rounded">
-                <router-link to="/signin" class="navbar-item">Sign-in</router-link>
-              </button>
-              <button class="button is-warning is-rounded">Sign-up</button>
-            </div>
-          </div>
-        </div>
-        <button class="modal-close is-large" aria-label="close"></button>
-      </div>
-    </div>
-
     <Navigation :isActiveLogo="true" />
     <section class="hero is-info is-large">
       <div class="hero-body">
@@ -69,14 +50,26 @@
       <div class="column">
         <div
           class="beach-card"
-          v-for="(beach,index) in beaches.beaches"
+          v-for="(beach,index) in filteredBeaches.sort(function(a, b) {
+  var nameA = a.name.toUpperCase(); // ignore upper and lowercase
+  var nameB = b.name.toUpperCase(); // ignore upper and lowercase
+  if (nameA < nameB) {
+    return -1;
+  }
+  if (nameA > nameB) {
+    return 1;
+  }
+
+  // names must be equal
+  return 0;})"
           :key="index"
-          :class="{hidden: beach.isHidden}"
         >
           <BeachCard :beach="beach" />
         </div>
         <div>
-          <strong>{{searchResult}}</strong>
+          <strong>
+            <p v-if="fetchedPosts == 0">Nema rezultata</p>
+          </strong>
         </div>
       </div>
     </div>
@@ -92,40 +85,49 @@ import auth from "../auth/index";
 export default {
   components: { BeachCard, Navigation },
   data() {
-    return { searchResult: "", bus, beaches: [], isModalActive: false };
+    return {
+      searchResult: "",
+      bus,
+      beaches: [],
+      isModalActive: false,
+      fetchedPosts: 1,
+      filteredBeaches: [],
+    };
   },
 
   methods: {
     searchBeaches() {
-      this.beaches.forEach((beach) => {
-        if (!beach.name.includes(this.$refs.beachText.value)) {
-          beach.isHidden = true;
-          this.searchResult = "Nema rezultata";
-        } else {
-          this.searchResult = "";
+      this.fetchedPosts = 0;
+      this.filteredBeaches = [];
+      for (let i = 0; i < this.beaches.beaches.length; i++) {
+        if (
+          this.beaches.beaches[i].name
+            .toLowerCase()
+            .includes(this.$refs.beachText.value.toLowerCase())
+        ) {
+          this.filteredBeaches.push(this.beaches.beaches[i]);
         }
-      });
-      if (this.$refs.beachText.value === "") {
-        this.beaches.forEach((beach) => {
-          beach.isHidden = false;
-        });
+      }
+      this.fetchedPosts = this.filteredBeaches.length;
+      if (!this.$refs.beachText.value) {
+        this.filteredBeaches = this.beaches.beaches;
       }
     },
     exitModal() {
       this.isModalActive = false;
     },
-     canActivate() {
+    canActivate() {
       auth.checkAuth();
       return auth.user.authenticated;
     },
   },
-  created() {},
   mounted() {
     var self = this;
     axios
       .get("http://localhost:3000/beaches")
       .then((response) => {
         self.beaches = JSON.parse(JSON.stringify(response.data));
+        self.filteredBeaches = self.beaches.beaches;
       })
       .catch((error) => {
         console.log(error);
@@ -146,7 +148,7 @@ export default {
   cursor: pointer;
   font-size: x-large;
   transform: rotate(90deg);
-  color:white;
+  color: white;
 }
 .hidden {
   display: none;

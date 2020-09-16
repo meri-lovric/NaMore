@@ -61,4 +61,7 @@ export default {
   cursor: pointer;
   font-size: xx-large;
 }
+.logout-icon:hover{
+  transform: scale(1.2)
+}
 </style>
