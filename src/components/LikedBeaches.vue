@@ -21,7 +21,7 @@
       <div class="columns is-multiline">
         <div v-for="(beach, index) in filteredBeaches" :key="index" class="card column is-4">
           <div class="card-image">
-            <figure class="image is-4by3">
+            <figure @click="showBeachPage(beach)" class="image is-4by3">
               <img :src="getImage()+beach.beachImage" alt="Placeholder image" />
             </figure>
           </div>
@@ -63,8 +63,10 @@ export default {
     };
   },
   methods: {
+    showBeachPage(beach) {
+      this.$router.push({ name: "BeachPage", params: { beach } });
+    },
     upvote(beach) {
-      // console.log("Is beach found:" + found.name);
 
       let liked = auth.user.userObject.liked;
       const index = liked.findIndex((el) => el._id == beach._id);
@@ -73,7 +75,7 @@ export default {
       }
       axios
         .patch(
-          `http://localhost:3000/users/` + auth.user.userObject._id,
+          `https://na-more.netlify.app/users/` + auth.user.userObject._id,
           [{ propName: "liked", value: liked }],
           {
             headers: {
@@ -85,7 +87,7 @@ export default {
           auth.user.userObject.liked = liked;
           axios
             .patch(
-              "http://localhost:3000/beaches/" + beach._id,
+              "https://na-more.netlify.app/beaches/" + beach._id,
               [{ propName: "likes", value: beach.likes - 1 }],
               {
                 headers: {
@@ -97,7 +99,6 @@ export default {
               this.childMessage--;
               this.emitToParent();
               beach.likes--;
-              console.log("After patch like:" + beach.likes);
             })
             .catch((error) => {
               console.log(error);
@@ -108,22 +109,35 @@ export default {
     search() {
       this.fetchedPosts = 0;
       this.filteredBeaches = [];
-      for (let i = 0; i < this.userBeaches.length; i++) {
+      this.userBeaches.forEach((el) => {
         if (
-          this.userBeaches[i].name
+          el.name
             .toLowerCase()
             .includes(this.$refs.beachText.value.toLowerCase())
         ) {
-          this.filteredBeaches.push(this.userBeaches[i]);
+          this.filteredBeaches.push(el);
         }
-      }
+      });
+      this.filteredBeaches.sort(function (a, b) {
+        var nameA = a.name.toUpperCase(); // ignore upper and lowercase
+        var nameB = b.name.toUpperCase(); // ignore upper and lowercase
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+
+        // names must be equal
+        return 0;
+      });
       this.fetchedPosts = this.filteredBeaches.length;
       if (!this.$refs.beachText.value) {
         this.filteredBeaches = this.userBeaches;
       }
     },
     getImage() {
-      return "http://localhost:3000/";
+      return "https://na-more.netlify.app/";
     },
     emitToParent() {
       this.$emit("childToParent", this.childMessage);
@@ -133,12 +147,29 @@ export default {
     this.userBeaches = auth.user.userObject.liked;
     this.authToken = auth.getAuthHeader();
     this.filteredBeaches = this.userBeaches;
+    this.filteredBeaches.sort(function (a, b) {
+      var nameA = a.name.toUpperCase(); // ignore upper and lowercase
+      var nameB = b.name.toUpperCase(); // ignore upper and lowercase
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+
+      // names must be equal
+      return 0;
+    });
     this.childMessage = this.userBeaches.length;
     this.emitToParent();
   },
 };
 </script>
 <style scoped>
+.title {
+  color: #6b5ca5 !important;
+  font-variant: small-caps;
+}
 .subtitle {
   display: flex;
   justify-content: center;
@@ -156,5 +187,8 @@ export default {
 }
 .icon:hover {
   transform: scale(1.2);
+}
+.image{
+  cursor: pointer;
 }
 </style>

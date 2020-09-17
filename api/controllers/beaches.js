@@ -17,12 +17,17 @@ exports.beaches_get_all = (req, res, next) => {
             beachImage: doc.beachImage,
             isClicked: doc.isClicked,
             likes: doc.likes,
-            options: doc.options,
-            comments: doc.comments,
+            bar: doc.bar,
+            shade: doc.shade,
+            kids: doc.kids,
+            pets: doc.pets,
+            parking: doc.parking,
+            food: doc.food,
+                        comments: doc.comments,
             _id: doc._id,
             request: {
               type: "GET",
-              url: "http://localhost:3000/beaches/" + doc._id, //later hardcode domain
+              url: "https://na-more.netlify.app/beaches/" + doc._id, //later hardcode domain
             },
           };
         }),
@@ -59,14 +64,12 @@ exports.beaches_create_beach = (req, res, next) => {
         description: req.body.description,
         author: req.body.author,
         beachImage: req.file.path,
-        options: {
-          bar: req.body.options.bar,
-          shade: req.body.options.shade,
-          kids: req.body.options.kids,
-          pets: req.body.options.pets,
-          parking: req.body.options.parking,
-          food: req.body.options.food,
-        },
+        bar: req.body.bar,
+        shade: req.body.shade,
+        kids: req.body.kids,
+        pets: req.body.pets,
+        parking: req.body.parking,
+        food: req.body.food,
         comments: [],
       });
       return beach.save();
@@ -76,14 +79,22 @@ exports.beaches_create_beach = (req, res, next) => {
       res.status(201).json({
         message: "Successfully created new beach",
         createdBeach: {
+          _id: result._id,
           name: result.name,
           description: result.description,
           author: result.author,
-          options: result.options,
+
+          bar: result.bar,
+          shade: result.shade,
+          kids: result.kids,
+          pets: result.pets,
+          parking: result.parking,
+          food: result.food,
+
           comments: result.comments,
           request: {
             type: "GET",
-            url: "http://localhost:3000/beaches/" + result._id,
+            url: "https://na-more.netlify.app/beaches/" + result._id,
           },
         },
       });

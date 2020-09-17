@@ -1,20 +1,20 @@
 <template>
 <div>
-  <Navigation :isActiveLogo="true" />
+  <Navigation />
   <section class="section">
     <div class="container">
       <HeroTitle pageName="NaMore" pageSubtitle="Di se kupaš?" />
     </div>
   </section>
   <router-view />
-  <BeachesContainer :creds="creds" />
+  <BeachesContainer />
   <body>
     <section class="section">
       <div class="container">
         <h1 class="title">Feed</h1>
         <h2 class="subtitle">
-          A simple container to divide your page into
-          <strong>sections</strong>, like the one you're currently reading
+          Pročitajte sve
+          <strong>najnovije</strong> objave
         </h2>
         <div class="posts">
           <div class="container" v-for="(post,index) in reversedPosts" :key="index">
@@ -55,7 +55,7 @@ export default {
   mounted() {
     var self = this;
     axios
-      .get("http://localhost:3000/posts")
+      .get("https://na-more.netlify.app/posts")
       .then((response) => {
         self.posts = JSON.parse(JSON.stringify(response.data));
         self.reversedPosts = self.posts.posts.reverse();

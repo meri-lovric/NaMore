@@ -7,14 +7,12 @@
         <div class="control">
           <input class="input" ref="beachName" type="text" placeholder="Text input" />
         </div>
-        <p class="help is-success">This username is available</p>
       </div>
       <div class="field">
         <label class="label">Slika plaže</label>
         <div class="control">
           <input type="file" id="file" ref="file" @change="handleFileUpload()" />
         </div>
-        <p class="help is-success">This username is available</p>
       </div>
 
       <div class="field">
@@ -125,30 +123,26 @@ export default {
       formData.append("beachImage", this.file),
         formData.append("description", this.$refs.beachDescription.value),
         formData.append("author", auth.user.userObject._id);
-      let options ={
-        bar: this.$refs.beachBar.checked,
-        shade: this.$refs.beachShade.checked,
-        kids: this.$refs.beachKids.checked,
-        pets: this.$refs.beachPets.checked,
-        parking: this.$refs.beachParking.checked,
-        food: this.$refs.beachFood.checked,
-      };
-      formData.append("options", options);
-      console.log(options)
-      axios
-        .post("http://localhost:3000/beaches", formData, {
-          headers: {
-            Authorization: this.authToken,
-          },
-        })
-        .then(() => {
-          console.log("Successfully added new beach");
-          this.$router.push({ name: "Beaches" });
-        })
-        .catch((error) => {
-          console.log(error)
-          this.isModalActive = true;
-        });
+        formData.append("bar", this.$refs.beachBar.checked),
+        formData.append("shade", this.$refs.beachShade.checked),
+        formData.append("kids", this.$refs.beachKids.checked),
+        formData.append("pets", this.$refs.beachPets.checked),
+        formData.append("parking", this.$refs.beachParking.checked),
+        formData.append("food", this.$refs.beachFood.checked),
+        axios
+          .post("https://na-more.netlify.app/beaches", formData, {
+            headers: {
+              Authorization: this.authToken,
+            },
+          })
+          .then(() => {
+            console.log("Successfully added new beach");
+            this.$router.push({ name: "Beaches" });
+          })
+          .catch((error) => {
+            console.log(error);
+            this.isModalActive = true;
+          });
     },
     exitModal() {
       this.isModalActive = false;

@@ -94,7 +94,7 @@ export default {
         formData
       );
       axios
-        .post("http://localhost:3000/users/signup", formData)
+        .post("https://na-more.netlify.app/users/signup", formData)
         .then(() => {
           console.log("Successfully created new user");
           this.$router.push("/");

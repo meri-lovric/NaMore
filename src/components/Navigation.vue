@@ -1,19 +1,6 @@
 <template>
   <div>
     <nav class="navbar level" role="navigation" aria-label="main navigation">
-      <div class="navbar-brand level-left">
-        <a
-          role="button"
-          class="navbar-burger burger"
-          aria-label="menu"
-          aria-expanded="false"
-          data-target="navbarBasicExample"
-        >
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-        </a>
-      </div>
 
       <div id="navbarBasicExample" class="navbar-menu">
         <div class="navbar-start">
@@ -24,19 +11,20 @@
               class="navbar-item"
             >Home</router-link>
           </a>
-
-          <router-link
-            :class="{'active':this.$route.path=='/profile'}"
-            v-if="canActivate()"
-            to="/profile"
-            class="navbar-item"
-          >Profile</router-link>
-
-          <router-link
-            :class="{'active':this.$route.path=='/beaches'}"
-            to="/beaches"
-            class="navbar-item"
-          >Plaže</router-link>
+          <a class="navbar-item" v-if="canActivate()">
+            <router-link
+              :class="{'active':this.$route.path=='/profile'}"
+              to="/profile"
+              class="navbar-item"
+            >Profile</router-link>
+          </a>
+          <a class="navbar-item">
+            <router-link
+              :class="{'active':this.$route.path=='/beaches'}"
+              to="/beaches"
+              class="navbar-item"
+            >Plaže</router-link>
+          </a>
         </div>
       </div>
     </nav>
@@ -60,7 +48,6 @@ export default {
       this.isModalActive = false;
     },
     canActivate() {
-      auth.checkAuth();
       return auth.user.authenticated;
     },
   },
@@ -77,5 +64,10 @@ export default {
 .navbar-item:hover {
   transform: scale(1.2);
   color: #00d1b2;
+}
+@media screen and (max-width: 1023px) {
+  .navbar-menu {
+    display: block !important;
+  }
 }
 </style>

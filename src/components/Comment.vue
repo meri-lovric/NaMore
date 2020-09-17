@@ -44,7 +44,7 @@ export default {
       this.$emit("childToParent", this.comment._id);
     },
     getImage() {
-      return "http://localhost:3000/";
+      return "https://na-more.netlify.app/";
     },
   },
 };

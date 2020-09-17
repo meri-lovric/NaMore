@@ -9,11 +9,11 @@
         </div>
       </div>
     </div>
-    <router-link  class="tile is-parent" :to="{ name: 'BeachPage', params: {beach: beach } }">
+    <router-link class="tile is-parent" :to="{ name: 'BeachPage', params: {beach: beach } }">
       <div class="tile is-parent">
         <article class="tile is-child notification is-info">
-          <p class="title">{{beach.name}}</p>
-          <figure class="image is-4by3">
+          <p class="title beach-title">{{beach.name}}</p>
+          <figure class="image">
             <img :src="getImage()+beach.beachImage" />
           </figure>
         </article>
@@ -24,7 +24,7 @@
       <article class="tile is-child notification">
         <p class="subtitle"></p>
         <div class="content">
-          <p>{{beach.description}}</p>
+          <p class="description">{{beach.description}}</p>
           <nav class="level is-mobile">
             <div class="level-item has-text-centered">
               <div>
@@ -42,22 +42,26 @@
           <nav class="level is-mobile">
             <div class="level-item has-text-centered">
               <div>
-                <p class="title" @mouseover="hover=true" @mouseleave="hover=false">
-                  <font-awesome-icon
-                    icon="coffee"
-                    :class="{'has-text-success' : beach.options.bar}"
-                  />
+                <p
+                  class="title"
+                  @mouseover="hover=true"
+                  @mouseleave="hover=false"
+                  :class="{'has-text-success' : beach.bar}"
+                >
+                  <font-awesome-icon icon="coffee" />
                   <span v-if="hover">Beach Bar</span>
                 </p>
               </div>
             </div>
             <div class="level-item has-text-centered">
               <div>
-                <p class="title" @mouseover="hover=true" @mouseleave="hover=false">
-                  <font-awesome-icon
-                    icon="umbrella-beach"
-                    :class="{'has-text-success' : beach.options.shade}"
-                  />
+                <p
+                  class="title"
+                  @mouseover="hover=true"
+                  @mouseleave="hover=false"
+                  :class="{'has-text-success' : beach.shade}"
+                >
+                  <font-awesome-icon icon="umbrella-beach" />
                   <span v-if="hover">Hlad</span>
                 </p>
               </div>
@@ -69,7 +73,7 @@
                   class="title"
                   @mouseover="hover=true"
                   @mouseleave="hover=false"
-                  :class="{'has-text-success' : beach.options.kids}"
+                  :class="{'has-text-success' : beach.kids}"
                 >
                   <font-awesome-icon icon="child" />
                   <span v-if="hover">Djeca</span>
@@ -83,7 +87,7 @@
                   class="title"
                   @mouseover="hover=true"
                   @mouseleave="hover=false"
-                  :class="{'has-text-success' : beach.options.pets}"
+                  :class="{'has-text-success' : beach.pets}"
                 >
                   <font-awesome-icon icon="dog" />
                   <span v-if="hover">Životinje</span>
@@ -96,7 +100,7 @@
                   class="title"
                   @mouseover="hover=true"
                   @mouseleave="hover=false"
-                  :class="{'has-text-success' : beach.options.parking}"
+                  :class="{'has-text-success' : beach.parking}"
                 >
                   <font-awesome-icon icon="parking" />
                   <span v-if="hover">Parking</span>
@@ -109,7 +113,7 @@
                   class="title"
                   @mouseover="hover=true"
                   @mouseleave="hover=false"
-                  :class="{'has-text-success' : beach.options.food}"
+                  :class="{'has-text-success' : beach.food}"
                 >
                   <font-awesome-icon icon="utensils" />
                   <span v-if="hover">Hrana</span>
@@ -154,6 +158,7 @@ import { user } from "../user.js";
 import auth from "../auth/index";
 import axios from "axios";
 import mongoose from "mongoose";
+
 export default {
   data() {
     return {
@@ -173,7 +178,7 @@ export default {
       this.isModalActive = !this.isModalActive;
     },
     getImage() {
-      return "http://localhost:3000/";
+      return "https://na-more.netlify.app/";
     },
     submitComment(beach) {
       let comments = beach.comments;
@@ -193,7 +198,7 @@ export default {
 
       axios
         .patch(
-          `http://localhost:3000/beaches/` + beach._id,
+          `https://na-more.netlify.app/beaches/` + beach._id,
           [{ propName: "comments", value: comments }],
           {
             headers: {
@@ -213,7 +218,6 @@ export default {
       this.isCommentModalActive = false;
     },
     canActivate() {
-      auth.checkAuth();
       return auth.user.authenticated;
     },
   },
@@ -229,7 +233,6 @@ export default {
     },
   },
   mounted() {
-    console.log(this.beach.options.kids);
     this.authToken = auth.getAuthHeader();
   },
 };
@@ -253,8 +256,35 @@ span {
   width: 100%;
   object-fit: cover;
 }
+.image {
+  height: 50vh;
+}
 router-link {
   cursor: pointer;
   text-decoration: none;
+}
+.description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 4; /* number of lines to show */
+  -webkit-box-orient: vertical;
+}
+p.title {
+  font-size: small;
+}
+.beach-title {
+  font-size: x-large !important;
+  color: white;
+  font-variant: small-caps;
+}
+@media only screen and (max-width: 800px) {
+  p.title {
+    font-size: xx-small;
+  }
+  .beach-card-instance {
+    display: flex;
+    flex-direction: column;
+  }
 }
 </style>

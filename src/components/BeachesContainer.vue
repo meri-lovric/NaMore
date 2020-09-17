@@ -1,7 +1,7 @@
 <template>
   <div class="tile is-ancestor">
     <div v-if="beaches.count > 0" class="tile is-parent is-12 scrolling-wrapper">
-      <div v-for="(beach, index) in beaches.beaches.slice().reverse()" :key="index" class="card">
+      <div v-for="(beach, index) in beaches.beaches.slice(beaches.beaches.length - 5,beaches.beaches.length).reverse()" :key="index" class="card">
         <div @click="showBeachPage(beach)" class="card-image">
           <figure class="image is-4by3">
             <img :src="getImage() + beach.beachImage" alt="Placeholder image" />
@@ -11,21 +11,21 @@
           <div class="media">
             <div class="media-left">
               <span
-                v-if="renderComponent"
+                v-if="renderComponent && canActivate()"
                 class="icon is-small"
                 v-bind:class="{ liked: isLikedByUser(beach._id) }"
                 @change="reload()"
               >
-                <font-awesome-icon icon="heart" @click="upvote(beach)" />
+                <font-awesome-icon  icon="heart" @click="upvote(beach)" />
               </span>
               <strong v-if="renderComponent" class="has-text-info">{{ beach.likes }}</strong>
             </div>
             <div class="media-content">
-              <p class="title is-4">{{ beach.name }}</p>
+              <p class="title is-4" @click="showBeachPage(beach)">{{ beach.name }}</p>
               <p class="subtitle is-6">@{{beach.author.username}}</p>
             </div>
           </div>
-          <div class="content">{{ beach.description }}</div>
+          <div class="content description">{{ beach.description }}</div>
         </div>
       </div>
     </div>
@@ -47,17 +47,17 @@ export default {
     upvote(beach) {
       let liked = auth.user.userObject.liked;
       let found = false;
-      for (let i = 0; i < liked.length; i++) {
-        if (liked[i]._id == beach._id) {
+      liked.forEach((el) => {
+        if (el._id == beach._id) {
           found = true;
         }
-      }
+      });
       if (!found) {
         liked.unshift(beach);
 
         axios
           .patch(
-            `http://localhost:3000/users/` + auth.user.userObject._id,
+            `https://na-more.netlify.app/users/` + auth.user.userObject._id,
             [{ propName: "liked", value: liked }],
             {
               headers: {
@@ -69,7 +69,7 @@ export default {
             auth.user.userObject.liked = liked;
             axios
               .patch(
-                "http://localhost:3000/beaches/" + beach._id,
+                "https://na-more.netlify.app/beaches/" + beach._id,
                 [{ propName: "likes", value: beach.likes + 1 }],
                 {
                   headers: {
@@ -94,7 +94,7 @@ export default {
         }
         axios
           .patch(
-            `http://localhost:3000/users/` + auth.user.userObject._id,
+            `https://na-more.netlify.app/users/` + auth.user.userObject._id,
             [{ propName: "liked", value: liked }],
             {
               headers: {
@@ -106,7 +106,7 @@ export default {
             auth.user.userObject.liked = liked;
             axios
               .patch(
-                "http://localhost:3000/beaches/" + beach._id,
+                "https://na-more.netlify.app/beaches/" + beach._id,
                 [{ propName: "likes", value: beach.likes - 1 }],
                 {
                   headers: {
@@ -129,7 +129,7 @@ export default {
       this.$router.push({ name: "BeachPage", params: { beach } });
     },
     getImage() {
-      return "http://localhost:3000/";
+      return "https://na-more.netlify.app/";
     },
 
     isLikedByUser(clickedBeachId) {
@@ -153,12 +153,15 @@ export default {
         this.renderComponent = true;
       });
     },
+    canActivate(){
+      return auth.user.authenticated;
+    }
   },
   mounted() {
     var self = this;
     self.authToken = auth.getAuthHeader();
     axios
-      .get("http://localhost:3000/beaches")
+      .get("https://na-more.netlify.app/beaches")
       .then((response) => {
         self.beaches = JSON.parse(JSON.stringify(response.data));
       })
@@ -182,10 +185,10 @@ export default {
   margin-right: 2%;
   width: calc(500px + 6 * ((100vw - 320px) / 680));
 }
-.card-image{
+.card-image {
   cursor: pointer;
 }
-.card-image:hover{
+.card-image:hover {
   transform: scale(1.05);
 }
 .content {
@@ -194,6 +197,9 @@ export default {
 }
 .tile.is-ancestor:last-child {
   margin-right: 5%;
+}
+.title{
+  cursor: pointer;
 }
 .icon {
   cursor: pointer;
@@ -218,5 +224,15 @@ export default {
 .modal-content {
   display: flex;
   flex-direction: column;
+}
+.subtitle {
+  color: #00d1b2;
+}
+.description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 4; /* number of lines to show */
+  -webkit-box-orient: vertical;
 }
 </style>

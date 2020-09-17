@@ -20,7 +20,7 @@ exports.posts_get_all = (req, res, next) => {
             time: doc.time,
             request: {
               type: "GET",
-              url: "http://localhost:3000/posts/" + doc._id,
+              url: "https://na-more.netlify.app/posts/" + doc._id,
             },
           };
         }),
@@ -78,7 +78,7 @@ exports.posts_get_one = (req, res, next) => {
           post: post,
           request: {
             type: "GET",
-            url: "http://localhost:3000/posts",
+            url: "https://na-more.netlify.app/posts",
           },
         });
       } else {
@@ -100,7 +100,7 @@ exports.posts_delete_post = (req, res, next) => {
         message: "Post deleted",
         request: {
           type: "POST",
-          url: "http://localhost:3000/posts",
+          url: "https://na-more.netlify.app/posts",
           body: { userId: "ID", text: "String" },
         },
       });

@@ -19,7 +19,7 @@
         </div>
       </h2>
       <div class="column" v-if="this.requestFinished">
-        <div  v-for="(post, index) in userPosts" :key="index">
+        <div v-for="(post, index) in userPosts" :key="index">
           <SinglePost :post="post" :class="{ hidden: post.isHidden }" />
         </div>
         <strong>
@@ -33,7 +33,7 @@
 <script>
 import SinglePost from "./SinglePost.vue";
 import axios from "axios";
-import auth from "../auth/index"
+import auth from "../auth/index";
 export default {
   components: { SinglePost },
   data() {
@@ -41,14 +41,15 @@ export default {
       posts: [],
       requestFinished: false,
       childMessage: 0,
-      user:{},
-      fetchedPosts: 1
+      user: {},
+      fetchedPosts: 1,
     };
   },
   computed: {
     userPosts: function () {
-      console.log(this.posts);
-      let posts = this.posts.posts.filter((post) => post.user._id == this.user._id);
+      let posts = this.posts.posts.filter(
+        (post) => post.user._id == this.user._id
+      );
       return posts.reverse();
     },
   },
@@ -78,10 +79,9 @@ export default {
     var self = this;
     self.user = auth.user.userObject;
     axios
-      .get("http://localhost:3000/posts/")
+      .get("https://na-more.netlify.app/posts/")
       .then((response) => {
         self.posts = JSON.parse(JSON.stringify(response.data));
-        console.log(self.posts);
         this.requestFinished = true;
         this.emitToParent();
       })
@@ -92,6 +92,10 @@ export default {
 };
 </script>
 <style scoped>
+.title {
+  color: #6b5ca5 !important;
+  font-variant: small-caps;
+}
 .subtitle {
   display: flex;
   justify-content: center;
@@ -99,8 +103,8 @@ export default {
 .hidden {
   display: none;
 }
-.column{
+.column {
   overflow-y: scroll;
   height: 45vh;
- }
+}
 </style>

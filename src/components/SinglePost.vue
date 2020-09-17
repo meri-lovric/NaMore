@@ -38,7 +38,7 @@ export default {
       let confirmation = window.confirm("Izbrisati objavu?");
       if (confirmation) {
         axios
-          .delete("http://localhost:3000/posts/" + this.post._id, {
+          .delete("https://na-more.netlify.app/posts/" + this.post._id, {
             headers: {
               Authorization: this.authToken,
             },
@@ -53,7 +53,7 @@ export default {
       }
     },
     getImage() {
-      return "http://localhost:3000/";
+      return "https://na-more.netlify.app/";
     },
   },
   mounted() {

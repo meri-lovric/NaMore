@@ -70,25 +70,25 @@
       <!-- Hero content: will be in the middle -->
       <div class="hero-body">
         <div class="container has-text-centered">
-          <h1 class="title">
-            <div class="image-shadow-wrapper">
-              <div>
-                <font-awesome-icon
-                  class="is-pulled-right icon"
-                  icon="edit"
-                  @click="isModalEditActive=true"
-                />
-                <div class="image-shadow">
-                  <img :src="getImage()+user.userImage" />
-                </div>
-              </div>
+          <font-awesome-icon class="edit" icon="edit" @click="isModalEditActive=true"/>
+
+          <div class="card profile-card-1">
+            <img
+              src="https://images.unsplash.com/photo-1599055540469-ffb3b416c72c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=968&q=80"
+              alt="profile-sample1"
+              class="background"
+            />
+
+            <img class="profile image" :src="getImage()+user.userImage" alt="profile-image" />
+
+            <div class="card-content">
+              <h2>
+                {{user.name}}
+                <small>@{{user.username}}</small>
+              </h2>
             </div>
-          </h1>
-          <h2 class="subtitle">
-            {{user.name}}
-            <br />
-            @{{user.username}}
-          </h2>
+          </div>
+
           <ProfileInfo
             @childToParent="onChangeTabMount"
             :galleryNum="galleryNumfromChild"
@@ -103,7 +103,7 @@
             placeholder="Novi status ..."
             @keyup.enter="submitStatus()"
           />
-          <button class="button is-primary is-inverted is-outlined" @click="submitStatus()">Pošalji</button>
+          <button class="button active-tab" @click="submitStatus()">Pošalji</button>
         </div>
       </div>
 
@@ -117,7 +117,7 @@
                 :key="`option-${index}`"
                 @click="changeTab(option.id)"
               >
-                <a>{{option.title}}</a>
+                <a :class="{'active-tab': option.isActive}" class="option">{{option.title}}</a>
               </li>
             </ul>
           </div>
@@ -189,7 +189,7 @@ export default {
     deleteUser() {
       if (window.confirm("Želite li sigurno izbrisati korisnički račun?")) {
         axios
-          .delete("http://localhost:3000/users/" + auth.user.userObject._id, {
+          .delete("https://na-more.netlify.app/users/" + auth.user.userObject._id, {
             headers: {
               Authorization: this.authToken,
             },
@@ -227,7 +227,7 @@ export default {
       this.changeTab(value);
     },
     getImage() {
-      return "http://localhost:3000/";
+      return "https://na-more.netlify.app/";
     },
     changeTab(optionId) {
       let clickedOption = this.options.find((option) => option.id === optionId);
@@ -240,7 +240,7 @@ export default {
     submitStatus() {
       axios
         .post(
-          "http://localhost:3000/posts/",
+          "https://na-more.netlify.app/posts/",
           {
             userId: this.user._id,
             text: this.$refs.statusText.value,
@@ -277,7 +277,7 @@ export default {
 
       axios
         .patch(
-          "http://localhost:3000/users/" +
+          "https://na-more.netlify.app/users/" +
             auth.user.userObject._id +
             "/userImage",
           formData,
@@ -301,7 +301,7 @@ export default {
     editInfoName() {
       axios
         .patch(
-          "http://localhost:3000/users/" + auth.user.userObject._id,
+          "https://na-more.netlify.app/users/" + auth.user.userObject._id,
           [{ propName: "name", value: this.$refs.name.value }],
           {
             headers: {
@@ -321,7 +321,7 @@ export default {
     editInfoUsername() {
       axios
         .patch(
-          "http://localhost:3000/users/" + auth.user.userObject._id,
+          "https://na-more.netlify.app/users/" + auth.user.userObject._id,
           [{ propName: "username", value: this.$refs.username.value }],
           {
             headers: {
@@ -359,53 +359,20 @@ export default {
   flex-direction: column;
   align-items: center;
 }
-.title {
-  width: 20rem;
-  height: 20rem;
+.edit {
+  position: relative;
+  left: 5%;
+  top: 55px;
+  z-index: 1;
+  cursor: pointer;
+}
+.edit:hover {
+  transform: scale(1.2);
 }
 .title img {
   height: 100%;
   width: 100%;
   object-fit: cover;
-}
-h2 {
-  margin-top: 0.75rem !important;
-}
-.image-shadow-wrapper {
-  width: 300px;
-  height: 300px;
-  margin: 0 auto;
-  transition: all 0.4s;
-}
-.image-shadow-wrapper:hover {
-  transform: scale(1.025);
-}
-
-.image-shadow {
-  position: relative;
-  background: var(--image) no-repeat center;
-  border-radius: 5px;
-  width: 300px;
-  height: 300px;
-  backface-visibility: hidden;
-}
-.image-shadow::after {
-  content: "";
-  position: absolute;
-  top: 1%;
-  left: 0.5%;
-  width: 99%;
-  height: 99%;
-  background: var(--image) no-repeat center;
-  filter: blur(0);
-  opacity: 0;
-  transition: all 0.4s;
-  z-index: -1;
-}
-
-.image-shadow:hover::after {
-  opacity: 1;
-  filter: blur(15px);
 }
 .icon {
   position: relative;
@@ -413,4 +380,109 @@ h2 {
   bottom: -15px;
   cursor: pointer;
 }
+.is-active {
+  display: none;
+}
+
+.active-tab {
+  background-color: #f5e5fc;
+  border-radius: 0px 10px;
+  color: #6b5ca5 !important;
+  font-variant: small-caps;
+  font-weight: bold;
+}
+button.active-tab {
+  border-radius: 10px 10px;
+  box-shadow: 0 0 5px 1px rgba(52, 52, 52, 0.224);
+}
+button.active-tab:hover {
+  transform: scale(1.1);
+}
+
+.profile-card-1 {
+  position: relative;
+  float: left;
+  overflow: hidden;
+  width: 100%;
+  color: #ffffff;
+  text-align: center;
+  height: 368px;
+  border: none;
+}
+.profile-card-1 .background {
+  width: 100%;
+  vertical-align: top;
+  opacity: 0.9;
+  -webkit-filter: blur(2px);
+  filter: blur(2px);
+  -webkit-transform: scale(1.8);
+  transform: scale(1.2);
+}
+.profile-card-1 .card-content {
+  width: 100%;
+  padding: 15px 25px;
+  position: absolute;
+  left: 0;
+  top: 50%;
+}
+.profile-card-1 .profile {
+  border-radius: 50%;
+  position: absolute;
+  bottom: 50%;
+  left: 50%;
+  height: 150px;
+  width: 150px;
+  /* width: 20%; */
+  object-fit: cover;
+  opacity: 1;
+  box-shadow: 3px 3px 20px rgba(0, 0, 0, 0.5);
+  -webkit-transform: translate(-50%, 0%);
+  transform: translate(-50%, 0%);
+}
+.profile-card-1 h2 {
+  margin: 0 0 5px;
+  font-weight: 600;
+  font-size: 25px;
+}
+.profile-card-1 h2 small {
+  display: block;
+  font-size: 15px;
+  margin-top: 10px;
+}
+.profile-card-1 i {
+  display: inline-block;
+  font-size: 16px;
+  color: #ffffff;
+  text-align: center;
+  border: 1px solid #fff;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 50%;
+  margin: 0 5px;
+}
+.profile-card-1 .icon-block {
+  float: left;
+  width: 100%;
+  margin-top: 15px;
+}
+.profile-card-1 .icon-block a {
+  text-decoration: none;
+}
+.profile-card-1 i:hover {
+  background-color: #fff;
+  color: #2e3434;
+  text-decoration: none;
+}
+.image img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+@media screen and (max-width: 1023px) {
+  .navbar-menu {
+    display: block !important;
+  }
+}
+
 </style>

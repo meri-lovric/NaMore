@@ -26,7 +26,7 @@
               class="is-pulled-right delete has-background-danger"
             ></button>
 
-            <figure class="image is-4by3">
+            <figure @click="showBeachPage(beach)" class="image is-4by3">
               <img :src="getImage()+beach.beachImage" alt="Placeholder image" />
             </figure>
           </div>
@@ -63,36 +63,55 @@ export default {
     };
   },
   methods: {
+    showBeachPage(beach) {
+      this.$router.push({ name: "BeachPage", params: { beach } });
+    },
     search() {
       this.fetchedPosts = 0;
       this.filteredBeaches = [];
-      for (let i = 0; i < this.userBeaches.length; i++) {
+      this.userBeaches.forEach((el) => {
         if (
-          this.userBeaches[i].name
+          el.name
             .toLowerCase()
             .includes(this.$refs.beachText.value.toLowerCase())
         ) {
-          this.filteredBeaches.push(this.userBeaches[i]);
+          this.filteredBeaches.push(el);
         }
-      }
+      });
+      this.filteredBeaches.sort(function (a, b) {
+        var nameA = a.name.toUpperCase(); // ignore upper and lowercase
+        var nameB = b.name.toUpperCase(); // ignore upper and lowercase
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+
+        // names must be equal
+        return 0;
+      });
       this.fetchedPosts = this.filteredBeaches.length;
       if (!this.$refs.beachText.value) {
         this.filteredBeaches = this.userBeaches;
       }
     },
     getImage() {
-      return "http://localhost:3000/";
+      return "https://na-more.netlify.app/";
     },
     emitToParent() {
       this.$emit("childToParent", this.childMessage);
     },
     deleteBeach(beachId) {
+       let confirmation = window.confirm("Izbrisati plažu?");
+      if (confirmation) {
+      
       const index = this.filteredBeaches.findIndex((el) => el._id == beachId);
       if (index > -1) {
         this.filteredBeaches.splice(index, 1);
       }
       axios
-        .delete("http://localhost:3000/beaches/" + beachId, {
+        .delete("https://na-more.netlify.app/beaches/" + beachId, {
           headers: {
             Authorization: this.authToken,
           },
@@ -105,6 +124,7 @@ export default {
         .catch((error) => {
           console.log(error);
         });
+      }
     },
   },
   mounted() {
@@ -112,7 +132,7 @@ export default {
     this.authToken = auth.getAuthHeader();
 
     axios
-      .get("http://localhost:3000/beaches/")
+      .get("https://na-more.netlify.app/beaches/")
       .then((response) => {
         self.beaches = JSON.parse(JSON.stringify(response.data));
         self.requestFinished = true;
@@ -120,6 +140,19 @@ export default {
           (beach) => beach.author._id == auth.user.userObject._id
         );
         self.filteredBeaches = self.userBeaches;
+        self.filteredBeaches.sort(function (a, b) {
+          var nameA = a.name.toUpperCase(); // ignore upper and lowercase
+          var nameB = b.name.toUpperCase(); // ignore upper and lowercase
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+
+          // names must be equal
+          return 0;
+        });
         self.childMessage = self.userBeaches.length;
         self.emitToParent();
       })
@@ -130,6 +163,10 @@ export default {
 };
 </script>
 <style scoped>
+.title {
+  color: #6b5ca5 !important;
+  font-variant: small-caps;
+}
 .subtitle {
   display: flex;
   justify-content: center;
@@ -138,6 +175,10 @@ export default {
   height: 100%;
   width: 100%;
   object-fit: cover;
+}
+
+.image {
+  cursor: pointer;
 }
 .hidden {
   display: none;

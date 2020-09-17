@@ -15,6 +15,7 @@
       <Footer />
     </body>
   </html>
+  <link href="https://fonts.googleapis.com/css?family=Archivo+Black|Judson:400,700" rel="stylesheet">
 </div>
 </template>
 
@@ -49,8 +50,16 @@ export default {
 </script>
 
 <style>
+body, p {
+ font-family: 'Work Sans', sans-serif;
+ font-weight: 300 !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+ font-family: 'Montserrat', sans-serif;
+ font-weight: 900 !important;
+}
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

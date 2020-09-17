@@ -23,7 +23,7 @@ exports.users_get_all = (req, res, next) => {
             liked: doc.liked,
             request: {
               type: "GET",
-              url: "http://localhost:3000/users/" + doc._id,
+              url: "https://na-more.netlify.app/users/" + doc._id,
             },
           };
         }),
@@ -79,7 +79,7 @@ exports.users_signup = (req, res, next) => {
                     username: result.username,
                     request: {
                       type: "GET",
-                      url: "http://localhost:3000/users/" + result._id,
+                      url: "https://na-more.netlify.app/users/" + result._id,
                     },
                   },
                 });
